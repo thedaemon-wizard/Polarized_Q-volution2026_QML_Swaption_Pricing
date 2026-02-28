@@ -1,0 +1,307 @@
+# Option Pricing with Quantum Machine Learning
+
+## Q-volution 2026 QML Hackathon - Track B (Quandela)
+
+This repository contains our submission for the Q-volution 2026 Quantum Machine Learning Hackathon,
+Track B organized by Quandela in collaboration with Mila and AMF (Autorite des marches financiers du Quebec).
+
+The goal is to build a QML model to predict actual prices of put and call options (swaptions)
+using the provided training dataset, built with Quandela's MerLin framework for photonic
+quantum machine learning.
+
+## Challenge Overview
+
+### What is a Swaption?
+
+A swaption is a financial derivative that gives its holder the right (but not the obligation) to enter
+into an interest rate swap at a future date. The pricing depends on:
+
+- **Maturity**: When the option can be exercised (e.g., 2 years)
+- **Tenor**: How long the underlying swap lasts once entered (e.g., 5 years)
+
+This creates a 2D pricing surface (maturity x tenor grid) that evolves over time.
+
+### Task Description
+
+**Level 1 - Future Prediction**: Forecast swaption prices over the next two weeks.
+
+**Level 2 - Missing Data Imputation + Future Prediction**: Impute missing values and forecast.
+
+### Key Constraints
+
+- Maximum **20 modes / 10 photons** in simulation
+- **No amplitude encoding** or state injection on QPU - angle encoding only
+- Must use **MerLin framework** (Quandela)
+- QPUs: Ascella (12 modes, 6 photons) and Belenos (24 modes, 12 photons)
+
+## Approach
+
+### Core Innovation: Quantum Residual Correction
+
+Our key insight is that classical linear models already capture ~95% of swaption price variance.
+Rather than training a quantum model from scratch, we use a **Residual Hybrid Architecture**
+where the quantum circuit learns to correct the classical baseline's errors:
+
+```
+Input (PCA features)
+    |
+    +--> [Frozen] Linear Regression --> Base Prediction
+    |                                        |
+    +--> ScaleLayer --> QuantumLayer          |
+              |                              |
+         LexGrouping --> BatchNorm           |
+              |                              |
+         MLP Head --> Correction             |
+              |                              |
+              +--- alpha * Correction -------+
+                                             |
+                                       Final Output
+```
+
+This approach outperforms the classical baseline (RMSE 0.0432 vs 0.0437).
+
+### Technical Architecture
+
+| Feature | Implementation |
+|---------|---------------|
+| **Framework** | MerLin (merlinquantum) + Perceval |
+| **Encoding** | Angle encoding only (QPU-compatible) |
+| **Scaling** | Learnable per-feature ScaleLayer (replaces fixed pi) |
+| **Circuit** | Standard and data re-uploading variants |
+| **Architecture** | Residual hybrid (classical + quantum correction) |
+| **Normalization** | MinMax [0,1] input + BatchNorm on quantum output |
+| **Training** | CosineAnnealing LR, Huber loss, gradient clipping |
+| **Max Scale** | 20 modes / 10 photons (184,756 quantum output dim) |
+| **QPU Noise** | Hardware-derived from Ascella and Belenos QPUs |
+
+### Preprocessing Pipeline
+
+1. **Min-Max normalization** to [0, 1] range (optimal for angle encoding)
+2. **Sliding window** (size 5) for time-series prediction
+3. **PCA** dimensionality reduction (4-10 components, 98-99.8% variance retained)
+4. **Learnable ScaleLayer** instead of fixed pi multiplication
+
+### Circuit Design
+
+- **Standard Circuit**: Entangling -> Angle Encoding -> [Rotations + Entangling] x 2 -> Superpositions
+- **Data Re-uploading Circuit**: Superpositions -> [Encoding + Rotations + Entangling] x N stages
+- UNBUNCHED computation space (at most 1 photon per mode)
+- "Dressed quantum circuit" pattern with classical pre/post-processing
+
+## Results
+
+### Key Finding: Residual Hybrid Model Outperforms Classical Baseline
+
+| Model | RMSE | R2 | Type |
+|-------|------|-----|------|
+| Linear Regression | 0.0437 | 0.950 | Classical |
+| MLP (64, 32) | 0.0507 | -- | Classical |
+| MLP (128, 64, 32) | 0.0489 | -- | Classical |
+| Standard Quantum (best) | 0.1883 | -- | Quantum only |
+| Data Re-uploading 2x | 0.1929 | -- | Quantum only |
+| **Residual Hybrid** | **0.0432** | **0.950** | **Quantum + Classical** |
+
+The Residual Hybrid model achieves the best overall RMSE, demonstrating that quantum
+circuits can provide meaningful corrections to classical predictions.
+
+### Quantum Circuit Scale Comparison
+
+| Config | Modes | Photons | Q-Output Dim | RMSE | Time |
+|--------|-------|---------|-------------|------|------|
+| Small | 6 | 3 | 20 | 0.1925 | 14s |
+| Medium | 10 | 5 | 252 | 0.1901 | 36s |
+| QPU-Ascella | 12 | 6 | 924 | 0.2047 | 52s |
+| **Large** | **16** | **8** | **12,870** | **0.1883** | **91s** |
+| Max | 20 | 10 | 184,756 | 0.1890 | 176s |
+
+### Data Re-uploading Experiment
+
+| Stages | RMSE | Notes |
+|--------|------|-------|
+| 1 (standard) | 0.1962 | Baseline |
+| 2 | 0.1929 | -1.7% improvement |
+| 3 | 0.2133 | Diminishing returns |
+
+### Noise Model Comparison (QPU-Derived Parameters)
+
+| QPU/Config | Brightness | Transmittance | RMSE |
+|------------|-----------|--------------|------|
+| Ascella | 0.1033 | 0.2440 | 0.1833 |
+| Belenos | 0.2369 | 0.5340 | 0.1835 |
+| Ideal | 1.0000 | 1.0000 | 0.1920 |
+
+Noise parameters derived from live QPU hardware metrics (HOM, Transmittance, g2).
+
+### QPU Information (Retrieved from Quandela Cloud)
+
+**Ascella QPU:**
+- 12 modes, 6 photons maximum
+- Threshold detectors (binary: click / no-click)
+- Connected input modes: [0, 2, 4, 6, 8, 10] (even modes only)
+- Performance: HOM 86.4%, Transmittance 2.44%, g2 1.95%
+- Clock: 80 MHz
+
+**Belenos QPU:**
+- 24 modes, 12 photons maximum
+- Threshold detectors
+- Connected input modes: [0, 2, 4, 6, 8, 9, 12, 13, 16, 18, 20, 22]
+- Performance: HOM 91.2%, Transmittance 5.34%, g2 2.5%
+
+### Backends
+
+- **CPU Simulator (SLOS)**: Perceval local simulation for development
+- **GPU Accelerated**: CUDA-accelerated local simulation for faster training
+- **Noise Model Simulator**: QPU-realistic noise with hardware-derived parameters
+  (brightness, transmittance, threshold detectors) for both Ascella and Belenos
+- **QPU Access**: Quandela Cloud (token in .env file, code commented out)
+
+## Repository Structure
+
+```
+Q-volution_2026_QML_Finance/
+|-- README.md                          # This file
+|-- swaption_qml.ipynb                 # Main notebook (Google Colab compatible)
+|-- requirements.txt                   # Python dependencies
+|-- .env                               # API token (not committed to git)
+|-- .gitignore                         # Git ignore rules
+|-- eda_analysis.png                   # Exploratory data analysis plots
+|-- circuit_6m.png                     # 6-mode circuit diagram
+|-- circuit_12m.png                    # 12-mode circuit diagram (QPU-Ascella)
+|-- circuit_reuploading.png            # Data re-uploading circuit diagram
+|-- circuits_all.png                   # All circuit diagrams combined
+|-- scale_comparison.png               # Circuit scale comparison plots
+|-- noise_comparison.png               # Noise model impact chart
+|-- prediction_scatter.png             # Predicted vs actual + evaluation plots
+|-- results_summary.png               # Summary visualization (3-panel)
+|-- predictions_val.csv                # Validation set predictions
+|-- model_comparison.csv               # All model RMSE comparison
+|-- noise_comparison.csv               # Noise model comparison data
+```
+
+## Setup
+
+### Quandela Cloud Token
+
+Create a `.env` file in the project root:
+
+```bash
+# .env
+QUANDELA_TOKEN=your_token_here
+```
+
+Get your token at: https://cloud.quandela.com
+
+The `.env` file is excluded from git via `.gitignore` for security.
+
+### Local Environment
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Google Colab
+
+Open the notebook in Google Colab and run the setup cells at the top.
+GPU runtime is recommended for faster training with larger circuits.
+For Colab, set the token as an environment variable or use Colab secrets.
+
+### Dataset
+
+The dataset is loaded directly in the notebook via Hugging Face:
+
+```python
+from datasets import load_dataset
+
+ds_level1 = load_dataset(
+    "Quandela/Challenge_Swaptions",
+    data_files="level-1_Future_prediction/train.csv",
+    split="train",
+)
+
+ds_level2 = load_dataset(
+    "Quandela/Challenge_Swaptions",
+    data_files="level-2_Missing_data_prediction/train_level2.csv",
+    split="train",
+)
+```
+
+## Requirements
+
+- Python 3.12
+- PyTorch >= 2.4.0
+- merlinquantum >= 0.2.2
+- perceval-quandela >= 1.0.1
+- python-dotenv >= 1.0.0
+- CUDA 12.x (for GPU acceleration)
+- See requirements.txt for full dependency list
+
+## Hardware Tested
+
+- CPU: Intel i5-13600K
+- GPU: NVIDIA RTX PRO 6000 Blackwell Workstation Edition 96GB
+- RAM: 128GB DDR5 5200
+- OS: Alma Linux 9.7
+
+## References
+
+### Framework and Platform
+
+1. Notton, C. et al. "MerLin: A Discovery Engine for Photonic and Hybrid QML." arXiv:2602.11092 (2026). [Paper](https://arxiv.org/abs/2602.11092) | [Docs](https://merlinquantum.ai) | [GitHub](https://github.com/Quandela/merlin)
+2. Heurtel, N. et al. "Perceval: A Software Platform for Discrete Variable Photonic Quantum Computing." Quantum 7, 931 (2023). [arXiv:2204.00602](https://arxiv.org/abs/2204.00602) | [Docs](https://perceval.quandela.net)
+3. Notton, C. et al. "Establishing Baselines for Photonic QML." arXiv:2510.25839 (2025). [Paper](https://arxiv.org/abs/2510.25839)
+
+### Residual Hybrid / Quantum Correction Architecture
+
+4. "Readout-Side Bypass for Residual Hybrid Quantum-Classical Models." [arXiv:2511.20922](https://arxiv.org/abs/2511.20922) (2025)
+5. "Trainability-Oriented Hybrid Quantum Regression via Geometric Preconditioning and Curriculum Optimization." [arXiv:2601.11942](https://arxiv.org/abs/2601.11942) (2026)
+6. Illesova, S. et al. "From Classical to Hybrid: A Practical Framework for Quantum-Enhanced Learning." [arXiv:2511.08205](https://arxiv.org/abs/2511.08205) (2025)
+
+### Dressed Quantum Circuit / Transfer Learning
+
+7. Mari, A. et al. "Transfer Learning in Hybrid Classical-Quantum Neural Networks." Quantum 4, 340 (2020). [arXiv:1912.08278](https://arxiv.org/abs/1912.08278)
+
+### Data Re-uploading
+
+8. Perez-Salinas, A. et al. "Data re-uploading for a universal quantum classifier." Quantum 4, 226 (2020). [arXiv:1907.02085](https://arxiv.org/abs/1907.02085)
+
+### Fourier Analysis of VQC / Learnable Scaling
+
+9. Schuld, M. et al. "Effect of data encoding on the expressive power of variational quantum ML models." Physical Review A 103, 032430 (2021). [arXiv:2008.08605](https://arxiv.org/abs/2008.08605)
+10. Jerbi, S. et al. "Parametrized Quantum Policies for Reinforcement Learning." NeurIPS 2021. [arXiv:2103.05577](https://arxiv.org/abs/2103.05577)
+
+### Batch Normalization
+
+11. Ioffe, S. & Szegedy, C. "Batch Normalization: Accelerating Deep Network Training." ICML 2015. [arXiv:1502.03167](https://arxiv.org/abs/1502.03167)
+12. "Optimal Normalization in Quantum-Classical Hybrid Models for Anti-Cancer Drug Response Prediction." [arXiv:2505.10037](https://arxiv.org/abs/2505.10037) (2025)
+
+### Training Optimization
+
+13. Loshchilov, I. & Hutter, F. "SGDR: Stochastic Gradient Descent with Warm Restarts." ICLR 2017. [arXiv:1608.03983](https://arxiv.org/abs/1608.03983)
+14. Huber, P.J. "Robust Estimation of a Location Parameter." Annals of Math. Statistics 35(1), 73-101 (1964)
+15. Pascanu, R. et al. "On the Difficulty of Training Recurrent Neural Networks." ICML 2013. [arXiv:1211.5063](https://arxiv.org/abs/1211.5063)
+
+### Barren Plateaus
+
+16. McClean, J.R. et al. "Barren Plateaus in Quantum Neural Network Training Landscapes." Nature Comm. 9, 4812 (2018). [arXiv:1803.11173](https://arxiv.org/abs/1803.11173)
+17. "Investigating and Mitigating Barren Plateaus in Variational Quantum Circuits: A Survey." [arXiv:2407.17706](https://arxiv.org/abs/2407.17706) (2024)
+
+### Photonic Quantum Advantage
+
+18. Yin, Z. et al. "Experimental quantum-enhanced kernel-based ML on a photonic processor." Nature Photonics 19, 1020-1027 (2025). [DOI:10.1038/s41566-025-01682-5](https://doi.org/10.1038/s41566-025-01682-5)
+19. "A Manufacturable Platform for Photonic Quantum Computing." Nature 641, 876-883 (2025). [DOI:10.1038/s41586-025-08820-7](https://doi.org/10.1038/s41586-025-08820-7)
+
+### Photonic Noise Modeling
+
+20. "Simulating Photonic Devices with Noisy Optical Elements." Physical Review Research 6, 033337 (2024). [arXiv:2311.10613](https://arxiv.org/abs/2311.10613)
+
+### Competition and Data
+
+21. Q-volution 2026 QML Hackathon: https://aqora.io/competitions/option-pricing-in-finance
+22. Dataset: https://huggingface.co/datasets/Quandela/Challenge_Swaptions
+23. Quandela Training Center: https://training.quandela.com
+
+## License
+
+This project was created for the Q-volution 2026 hackathon.

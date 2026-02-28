@@ -1,0 +1,14 @@
+,Model,RMSE,Category,Config
+1,Residual Hybrid,0.04324184339514765,Hybrid,"12m/6p, alpha=0.0536"
+2,Final Retrained (best),0.04327011696930551,Final,best architecture retrained 80 epochs
+3,Linear Regression,0.04371489144323422,Classical,PCA(6)
+4,"MLP (128, 64, 32)",0.04887818393053144,Classical,PCA(6)
+5,"MLP (64, 32)",0.05066389038980231,Classical,PCA(6)
+6,Max 20m/10p,0.18746660414455787,Quantum (Standard),20m/10p
+7,Large 16m/8p,0.18766100373428826,Quantum (Standard),16m/8p
+8,Medium 10m/5p,0.1903909319785926,Quantum (Standard),10m/5p
+9,Small 6m/3p,0.1924833456218292,Quantum (Standard),6m/3p
+10,Re-uploading 2x,0.19281182283788012,Quantum (Re-upload),"12m/6p, 2 stage(s)"
+11,Re-uploading 1x,0.19619404155865786,Quantum (Re-upload),"12m/6p, 1 stage(s)"
+12,QPU-Ascella 12m/6p,0.20474590913210594,Quantum (Standard),12m/6p
+13,Re-uploading 3x,0.21328160273693944,Quantum (Re-upload),"12m/6p, 3 stage(s)"
