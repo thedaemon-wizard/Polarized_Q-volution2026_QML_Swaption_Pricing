@@ -60,6 +60,29 @@ Input (PCA features)
 
 This approach outperforms the classical baseline (RMSE 0.0432 vs 0.0437).
 
+### Quantum Reservoir Computing (QRC)
+
+We also explore **Quantum Reservoir Computing** where the quantum circuit parameters are
+**fixed** (random, never trained) and only a classical readout is optimized. This avoids
+barren plateaus entirely and achieves competitive results:
+
+```
+Input (PCA features)
+    |
+    +--> [Frozen] Linear Regression --> Base Prediction
+    |                                        |
+    +--> ScaleLayer --> [FIXED] Quantum Circuit |
+              |                              |
+         LexGrouping --> BatchNorm           |
+              |                              |
+         MLP Correction --> alpha * corr ----+
+                                             |
+                                       Final Output
+```
+
+The Residual QRC (Belenos noise) achieves the **best overall RMSE (0.0432)**, matching or
+outperforming both the trainable VQC and classical baselines.
+
 ### Technical Architecture
 
 | Feature | Implementation |
@@ -67,8 +90,9 @@ This approach outperforms the classical baseline (RMSE 0.0432 vs 0.0437).
 | **Framework** | MerLin (merlinquantum) + Perceval |
 | **Encoding** | Angle encoding only (QPU-compatible) |
 | **Scaling** | Learnable per-feature ScaleLayer (replaces fixed pi) |
-| **Circuit** | Standard and data re-uploading variants |
+| **Circuit** | Standard, data re-uploading, and QRC (fixed reservoir) |
 | **Architecture** | Residual hybrid (classical + quantum correction) |
+| **QRC** | Fixed random interferometer + classical readout (no barren plateaus) |
 | **Normalization** | MinMax [0,1] input + BatchNorm on quantum output |
 | **Training** | CosineAnnealing LR, Huber loss, gradient clipping |
 | **Max Scale** | 20 modes / 10 photons (184,756 quantum output dim) |
@@ -85,6 +109,7 @@ This approach outperforms the classical baseline (RMSE 0.0432 vs 0.0437).
 
 - **Standard Circuit**: Entangling -> Angle Encoding -> [Rotations + Entangling] x 2 -> Superpositions
 - **Data Re-uploading Circuit**: Superpositions -> [Encoding + Rotations + Entangling] x N stages
+- **QRC Reservoir Circuit**: Fixed Random Interferometer -> Encoding -> Fixed Random Interferometer (no trainable quantum params)
 - UNBUNCHED computation space (at most 1 photon per mode)
 - "Dressed quantum circuit" pattern with classical pre/post-processing
 
@@ -99,10 +124,15 @@ This approach outperforms the classical baseline (RMSE 0.0432 vs 0.0437).
 | MLP (128, 64, 32) | 0.0489 | -- | Classical |
 | Standard Quantum (best) | 0.1883 | -- | Quantum only |
 | Data Re-uploading 2x | 0.1929 | -- | Quantum only |
-| **Residual Hybrid** | **0.0432** | **0.950** | **Quantum + Classical** |
+| Residual Hybrid (VQC) | 0.0432 | 0.950 | Quantum + Classical |
+| QRC Pure (Ideal) | 0.1871 | -- | Reservoir only |
+| Residual QRC (Ideal) | 0.0433 | -- | Reservoir + Classical |
+| Residual QRC (Ascella) | 0.0432 | -- | Reservoir + Classical + Noise |
+| **Residual QRC (Belenos)** | **0.0432** | -- | **Reservoir + Classical + Noise** |
 
-The Residual Hybrid model achieves the best overall RMSE, demonstrating that quantum
-circuits can provide meaningful corrections to classical predictions.
+The Residual Hybrid and Residual QRC models achieve the best overall RMSE, demonstrating that quantum
+circuits can provide meaningful corrections to classical predictions. Notably, QRC achieves
+comparable performance without training any quantum parameters, avoiding barren plateaus.
 
 ### Quantum Circuit Scale Comparison
 
@@ -131,6 +161,19 @@ circuits can provide meaningful corrections to classical predictions.
 | Ideal | 1.0000 | 1.0000 | 0.1920 |
 
 Noise parameters derived from live QPU hardware metrics (HOM, Transmittance, g2).
+
+### Quantum Reservoir Computing (QRC) Results
+
+| Model | RMSE | Noise | Quantum Params Trained |
+|-------|------|-------|----------------------|
+| QRC Pure (Ideal) | 0.1871 | None | 0 (fixed) |
+| Residual QRC (Ideal) | 0.0433 | None | 0 (fixed) |
+| Residual QRC (Ascella) | 0.0432 | Ascella QPU | 0 (fixed) |
+| **Residual QRC (Belenos)** | **0.0432** | Belenos QPU | **0 (fixed)** |
+
+QRC uses fixed random interferometers as quantum feature extractors, training only
+the classical readout layer. Despite no quantum parameter optimization, the Residual QRC
+matches and slightly outperforms the fully trainable Residual VQC.
 
 ### QPU Information (Retrieved from Quandela Cloud)
 
@@ -172,6 +215,7 @@ Q-volution_2026_QML_Finance/
 |-- scale_comparison.png               # Circuit scale comparison plots
 |-- noise_comparison.png               # Noise model impact chart
 |-- prediction_scatter.png             # Predicted vs actual + evaluation plots
+|-- qrc_comparison.png                # QRC vs VQC comparison plots
 |-- results_summary.png               # Summary visualization (3-panel)
 |-- predictions_val.csv                # Validation set predictions
 |-- model_comparison.csv               # All model RMSE comparison
@@ -296,11 +340,17 @@ ds_level2 = load_dataset(
 
 20. "Simulating Photonic Devices with Noisy Optical Elements." Physical Review Research 6, 033337 (2024). [arXiv:2311.10613](https://arxiv.org/abs/2311.10613)
 
+### Quantum Reservoir Computing
+
+21. "Quantum Reservoir Computing for Realized Volatility Forecasting." (Resource folder PDF)
+22. Sakurai, A. et al. "Quantum optical reservoir computing powered by boson sampling." Optica Quantum 3, 238-245 (2025). [DOI:10.1364/OPTICAQ.541432](https://doi.org/10.1364/OPTICAQ.541432)
+23. MerLin reproduction: [merlinquantum.ai/reproduced_papers/reproductions/quantum_reservoir_computing](https://merlinquantum.ai/reproduced_papers/reproductions/quantum_reservoir_computing.html)
+
 ### Competition and Data
 
-21. Q-volution 2026 QML Hackathon: https://aqora.io/competitions/option-pricing-in-finance
-22. Dataset: https://huggingface.co/datasets/Quandela/Challenge_Swaptions
-23. Quandela Training Center: https://training.quandela.com
+24. Q-volution 2026 QML Hackathon: https://aqora.io/competitions/option-pricing-in-finance
+25. Dataset: https://huggingface.co/datasets/Quandela/Challenge_Swaptions
+26. Quandela Training Center: https://training.quandela.com
 
 ## License
 
