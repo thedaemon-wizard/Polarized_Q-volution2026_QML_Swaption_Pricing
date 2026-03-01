@@ -1,0 +1,18 @@
+,Model,RMSE,Category,Config
+1,Residual QRC (Belenos),0.043161127842418795,QRC,"12m/6p, belenos"
+2,Residual QRC (Ascella),0.04316892852692266,QRC,"12m/6p, ascella"
+3,Residual Hybrid,0.04324185786567437,Hybrid,"12m/6p, alpha=0.0536"
+4,Final Retrained (best),0.04328916675404561,Final,best architecture retrained 80 epochs
+5,Residual QRC (Ideal),0.04329032714917161,QRC,"12m/6p, none"
+6,Linear Regression,0.04371489144323422,Classical,PCA(6)
+7,"MLP (128, 64, 32)",0.04887818393053144,Classical,PCA(6)
+8,"MLP (64, 32)",0.05066389038980231,Classical,PCA(6)
+9,QRC Pure (Ideal),0.1870666702052934,QRC,"12m/6p, none"
+10,Max 20m/10p,0.1872858486009579,Quantum (Standard),20m/10p
+11,Large 16m/8p,0.18911088092188674,Quantum (Standard),16m/8p
+12,Medium 10m/5p,0.1896828866293328,Quantum (Standard),10m/5p
+13,Small 6m/3p,0.19247309023699588,Quantum (Standard),6m/3p
+14,Re-uploading 2x,0.19289230338707122,Quantum (Re-upload),"12m/6p, 2 stage(s)"
+15,Re-uploading 1x,0.19619407538064712,Quantum (Re-upload),"12m/6p, 1 stage(s)"
+16,QPU-Ascella 12m/6p,0.20475106157875075,Quantum (Standard),12m/6p
+17,Re-uploading 3x,0.21316881115450845,Quantum (Re-upload),"12m/6p, 3 stage(s)"
