@@ -23,9 +23,19 @@ This creates a 2D pricing surface (maturity x tenor grid) that evolves over time
 
 ### Task Description
 
-**Level 1 - Future Prediction**: Forecast swaption prices over the next two weeks.
+**Primary Goal**: Use the ~490 rows of training data (Level 1) to predict the **next 6 rows**
+(224 swaption price features each). Assessment is based solely on these 6 predicted rows.
 
-**Level 2 - Missing Data Imputation + Future Prediction**: Impute missing values and forecast.
+Per Discord mentor guidance:
+> "Provided the ~490 rows of the dataset, provide the next 6 rows (224 features).
+> Those 6 rows are hidden from participants but accessible to us.
+> They will have to only use the ~490 rows to train, test, validate.
+> The assessment will be made based on those 6 rows."
+
+**No test data is provided.** Participants must create their own train/test split from
+the ~490 rows. We validate by holding out the last 6 rows as a proxy test set.
+
+Level 2 (missing data imputation) is **optional** and retained in the notebook for reference.
 
 ### Key Constraints
 
@@ -134,15 +144,32 @@ The Residual Hybrid and Residual QRC models achieve the best overall RMSE, demon
 circuits can provide meaningful corrections to classical predictions. Notably, QRC achieves
 comparable performance without training any quantum parameters, avoiding barren plateaus.
 
+### Computation Time Summary
+
+All training times measured on NVIDIA RTX PRO 6000 (GPU) with CUDA 12.x.
+Noise models run on CPU (MerLin's `PhotonLossTransform` device constraint).
+
+| Backend | Time | Notes |
+|---------|------|-------|
+| Classical (LR + MLP) | < 1s | CPU only |
+| Quantum simulator (GPU) | 14-177s | Scales with mode count |
+| Noise model (CPU) | 45-97s | QPU-derived parameters |
+| QRC Ideal (GPU) | 13s | No quantum params trained |
+| QRC Noisy (CPU) | 148-152s | Fixed circuit + noise |
+| Best model retrain | ~13s | 50-80 epochs |
+
+Timing is included in all print outputs and exported to `model_comparison.csv` (Time_s column)
+and `noise_comparison.csv` (Time_s column).
+
 ### Quantum Circuit Scale Comparison
 
 | Config | Modes | Photons | Q-Output Dim | RMSE | Time |
 |--------|-------|---------|-------------|------|------|
 | Small | 6 | 3 | 20 | 0.1925 | 14s |
 | Medium | 10 | 5 | 252 | 0.1901 | 36s |
-| QPU-Ascella | 12 | 6 | 924 | 0.2047 | 52s |
-| **Large** | **16** | **8** | **12,870** | **0.1883** | **91s** |
-| Max | 20 | 10 | 184,756 | 0.1890 | 176s |
+| QPU-Ascella | 12 | 6 | 924 | 0.2047 | 54s |
+| **Large** | **16** | **8** | **12,870** | **0.1878** | **89s** |
+| Max | 20 | 10 | 184,756 | 0.1890 | 177s |
 
 ### Data Re-uploading Experiment
 
@@ -154,22 +181,22 @@ comparable performance without training any quantum parameters, avoiding barren 
 
 ### Noise Model Comparison (QPU-Derived Parameters)
 
-| QPU/Config | Brightness | Transmittance | RMSE |
-|------------|-----------|--------------|------|
-| Ascella | 0.1033 | 0.2440 | 0.1833 |
-| Belenos | 0.2369 | 0.5340 | 0.1835 |
-| Ideal | 1.0000 | 1.0000 | 0.1920 |
+| QPU/Config | Brightness | Transmittance | RMSE | Time |
+|------------|-----------|--------------|------|------|
+| Ascella | 0.1033 | 0.2440 | 0.1833 | 87s |
+| Belenos | 0.2337 | 0.5200 | 0.1842 | 97s |
+| Ideal | 1.0000 | 1.0000 | 0.1920 | 45s |
 
 Noise parameters derived from live QPU hardware metrics (HOM, Transmittance, g2).
 
 ### Quantum Reservoir Computing (QRC) Results
 
-| Model | RMSE | Noise | Quantum Params Trained |
-|-------|------|-------|----------------------|
-| QRC Pure (Ideal) | 0.1871 | None | 0 (fixed) |
-| Residual QRC (Ideal) | 0.0433 | None | 0 (fixed) |
-| Residual QRC (Ascella) | 0.0432 | Ascella QPU | 0 (fixed) |
-| **Residual QRC (Belenos)** | **0.0432** | Belenos QPU | **0 (fixed)** |
+| Model | RMSE | Time | Noise | Quantum Params Trained |
+|-------|------|------|-------|----------------------|
+| QRC Pure (Ideal) | 0.1871 | 13s | None | 0 (fixed) |
+| Residual QRC (Ideal) | 0.0433 | 13s | None | 0 (fixed) |
+| Residual QRC (Ascella) | 0.0432 | 152s | Ascella QPU | 0 (fixed) |
+| **Residual QRC (Belenos)** | **0.0432** | **148s** | Belenos QPU | **0 (fixed)** |
 
 QRC uses fixed random interferometers as quantum feature extractors, training only
 the classical readout layer. Despite no quantum parameter optimization, the Residual QRC
@@ -188,7 +215,7 @@ matches and slightly outperforms the fully trainable Residual VQC.
 - 24 modes, 12 photons maximum
 - Threshold detectors
 - Connected input modes: [0, 2, 4, 6, 8, 9, 12, 13, 16, 18, 20, 22]
-- Performance: HOM 91.2%, Transmittance 5.34%, g2 2.5%
+- Performance: HOM 91.8%, Transmittance 5.20%, g2 2.1%
 
 ### Backends
 
@@ -196,7 +223,12 @@ matches and slightly outperforms the fully trainable Residual VQC.
 - **GPU Accelerated**: CUDA-accelerated local simulation for faster training
 - **Noise Model Simulator**: QPU-realistic noise with hardware-derived parameters
   (brightness, transmittance, threshold detectors) for both Ascella and Belenos
-- **QPU Access**: Quandela Cloud (token in .env file, code commented out)
+- **QPU Hardware**: Quandela Cloud via MerlinProcessor (Ascella, Belenos).
+  QPU evaluation is automatically enabled when `QUANDELA_TOKEN` is set in `.env`.
+  Before submitting jobs, each QPU's operational status is checked via `RemoteProcessor.status`;
+  only QPUs with `status == "running"` are evaluated (maintenance/calibration QPUs are skipped).
+  Uses a CPU noise-free builder-based model (required for `export_config()` / MerlinProcessor offloading).
+  Experiment-based (noisy) QuantumLayers cannot be offloaded to QPU.
 
 ## Repository Structure
 
@@ -218,10 +250,23 @@ Q-volution_2026_QML_Finance/
 |   |-- prediction_scatter.png         #   Predicted vs actual + evaluation plots
 |   |-- qrc_comparison.png             #   QRC vs VQC comparison plots
 |   |-- results_summary.png            #   Summary visualization (3-panel)
+|   |-- holdout_evaluation.png         #   Holdout 6-day auto-regressive evaluation
+|   |-- qpu_evaluation.png            #   QPU hardware evaluation (when token set)
+|   |-- qpu_evaluation.csv            #   QPU evaluation metrics (when token set)
 |   |-- missing_data_analysis.png      #   Level 2 missing data pattern analysis
 |   |-- predictions_val.csv            #   Validation set predictions
 |   |-- model_comparison.csv           #   All model RMSE comparison
 |   |-- noise_comparison.csv           #   Noise model comparison data
+|   |-- submission_predictions.xlsx    #   Submission file (test_template format)
+|   |-- submission_simulated.xlsx      #   Submission file (sample_Simulated format)
+|   |-- models/                        #   Saved trained models
+|   |   |-- model_best.pt             #     Best model state dict + metadata
+|   |   |-- scaler.pkl                #     Fitted MinMaxScaler
+|   |   |-- pca_6.pkl                 #     Fitted PCA(6) transform
+|-- sample_datasets/                   # Sample data files for submission format
+|   |-- test_template.xlsx             #   Test template (Future prediction + Missing data)
+|   |-- train.xlsx                     #   Training data (Excel format)
+|   |-- sample_Simulated_Swaption_Price.xlsx  # Example submission format
 ```
 
 ## Setup
@@ -255,23 +300,49 @@ For Colab, set the token as an environment variable or use Colab secrets.
 
 ### Dataset
 
-The dataset is loaded directly in the notebook via Hugging Face:
+The dataset is loaded directly in the notebook via Hugging Face.
+**Level 1 is the primary training dataset** (~490 rows, 224 features):
 
 ```python
 from datasets import load_dataset
 
+# Level 1 is the PRIMARY training dataset (~490 rows -> predict next 6)
 ds_level1 = load_dataset(
     "Quandela/Challenge_Swaptions",
     data_files="level-1_Future_prediction/train.csv",
     split="train",
 )
 
+# Level 2 loaded for optional missing data analysis
 ds_level2 = load_dataset(
     "Quandela/Challenge_Swaptions",
     data_files="level-2_Missing_data_prediction/train_level2.csv",
     split="train",
 )
 ```
+
+### Submission Format
+
+Two Excel files are generated matching the sample formats in `sample_datasets/`:
+
+| File | Format | Contents |
+|------|--------|----------|
+| `submission_predictions.xlsx` | test_template format | Type + 224 prices + Date (6 future rows) |
+| `submission_simulated.xlsx` | sample_Simulated format | 224 prices + Date + Type (all rows + 6 future) |
+
+### Model Save/Load
+
+Trained models are saved to `results/models/` for reuse without retraining:
+- `model_best.pt`: Model state dict + metadata (class, config, column names)
+- `scaler.pkl`: Fitted MinMaxScaler for de-normalization
+- `pca_6.pkl`: Fitted PCA(6) transform for dimensionality reduction
+
+### Holdout Evaluation
+
+Since no test data is provided, we validate the auto-regressive prediction by:
+1. Holding out the **last 6 rows** of the ~490-row training set
+2. Auto-regressively predicting them using only the preceding rows
+3. Computing RMSE/MAE/R2 against actual values as a proxy for assessment performance
 
 ## Requirements
 
@@ -356,25 +427,22 @@ ds_level2 = load_dataset(
 
 ## Future Improvements and Open Items
 
-Based on the competition requirements review, the following areas could further strengthen the submission:
-
-### Level 2 - Missing Data Imputation
-- The current Level 2 section performs **analysis only** (missing pattern detection, statistics)
-- When the Level 2 test set is released, an imputation strategy is needed (e.g., temporal interpolation, matrix completion, or quantum-assisted imputation)
-- The test set may have different missing patterns than the training set
-
-### Submission Pipeline
-- The test dataset will be provided at the end of the hackathon
-- A prediction pipeline function should be prepared to load the test set and generate submission-format predictions
-- Aqora.io submission format should be confirmed before final submission
+### Implemented
+- **Holdout evaluation**: Last 6 rows held out, auto-regressive prediction, RMSE/MAE/R2 comparison
+- **Model save/load**: Trained models saved to `results/models/` with all preprocessing artifacts
+- **Submission pipeline**: Auto-regressive 6-day future prediction, two Excel export formats
+- **Computation time tracking**: All training/evaluation cells report timing; exported to CSV files
+- **Best model selection fix**: When a noisy QRC model (e.g., Belenos) outperforms noise-free, the final RMSE and training losses correctly reflect the selected model's values
+- **QPU access verification**: Both Ascella and Belenos QPUs accessible via Quandela Cloud token
+- **QPU evaluation cell**: MerlinProcessor-based QPU evaluation with CPU builder-based model (auto-enabled via `QUANDELA_TOKEN`); checks `RemoteProcessor.status` and skips non-running QPUs
 
 ### Potential Model Enhancements
+- **QPU end-to-end evaluation**: The QPU evaluation cell builds a CPU noise-free builder-based model and offloads QuantumLayer leaves to QPU via MerlinProcessor. May timeout due to QPU queue latency; test during off-peak hours
 - **Quantum kernel methods**: MerLin supports Gaussian kernels and random kitchen sinks (not yet explored)
 - **RNN/LSTM baseline**: The training materials suggest RNN as a classical baseline for time-series data
 - **Larger circuit scales**: Current experiments go up to 20m/10p in simulation; QPU supports up to 24m/12p (Belenos)
 - **Richer noise model**: Current noise uses brightness + transmittance; could add `indistinguishability`, `g2`, dark counts from Perceval's `NoiseModel`
 - **Time-series cross-validation**: Current split is random; sequential splits would be more rigorous for time-series forecasting
-- **QPU validation**: Running at least one experiment on actual QPU hardware would validate the noise model predictions
 
 ## License
 

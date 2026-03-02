@@ -1,18 +1,18 @@
-,Model,RMSE,Category,Config
-1,Residual QRC (Belenos),0.043161127842418795,QRC,"12m/6p, belenos"
-2,Residual QRC (Ascella),0.04316892852692266,QRC,"12m/6p, ascella"
-3,Residual Hybrid,0.04324185786567437,Hybrid,"12m/6p, alpha=0.0536"
-4,Final Retrained (best),0.04328916675404561,Final,best architecture retrained 80 epochs
-5,Residual QRC (Ideal),0.04329032714917161,QRC,"12m/6p, none"
-6,Linear Regression,0.04371489144323422,Classical,PCA(6)
-7,"MLP (128, 64, 32)",0.04887818393053144,Classical,PCA(6)
-8,"MLP (64, 32)",0.05066389038980231,Classical,PCA(6)
-9,QRC Pure (Ideal),0.1870666702052934,QRC,"12m/6p, none"
-10,Max 20m/10p,0.1872858486009579,Quantum (Standard),20m/10p
-11,Large 16m/8p,0.18911088092188674,Quantum (Standard),16m/8p
-12,Medium 10m/5p,0.1896828866293328,Quantum (Standard),10m/5p
-13,Small 6m/3p,0.19247309023699588,Quantum (Standard),6m/3p
-14,Re-uploading 2x,0.19289230338707122,Quantum (Re-upload),"12m/6p, 2 stage(s)"
-15,Re-uploading 1x,0.19619407538064712,Quantum (Re-upload),"12m/6p, 1 stage(s)"
-16,QPU-Ascella 12m/6p,0.20475106157875075,Quantum (Standard),12m/6p
-17,Re-uploading 3x,0.21316881115450845,Quantum (Re-upload),"12m/6p, 3 stage(s)"
+,Model,RMSE,Category,Config,Time_s
+1,Residual QRC (Belenos),0.04316112345942611,QRC,"12m/6p, belenos",148.39594411849976
+2,Final Retrained (best),0.04316112345942611,Final,best architecture retrained 80 epochs,13.820494890213013
+3,Residual QRC (Ascella),0.04316892852692266,QRC,"12m/6p, ascella",152.2168505191803
+4,Residual Hybrid,0.043241613885215975,Hybrid,"12m/6p, alpha=0.0537",82.15586733818054
+5,Residual QRC (Ideal),0.04329032714917161,QRC,"12m/6p, none",13.391891241073608
+6,Linear Regression,0.04371489144323422,Classical,PCA(6),0.10900998115539551
+7,"MLP (128, 64, 32)",0.04887818393053144,Classical,PCA(6),0.10675883293151855
+8,"MLP (64, 32)",0.05066389038980231,Classical,PCA(6),0.17925262451171875
+9,QRC Pure (Ideal),0.18706666771601357,QRC,"12m/6p, none",13.292284727096558
+10,Max 20m/10p,0.18771392693244598,Quantum (Standard),20m/10p,186.45397663116455
+11,Large 16m/8p,0.18778085783630066,Quantum (Standard),16m/8p,96.77217030525208
+12,Medium 10m/5p,0.1909923347655611,Quantum (Standard),10m/5p,36.72220849990845
+13,Small 6m/3p,0.1924832706257163,Quantum (Standard),6m/3p,14.6547691822052
+14,Re-uploading 2x,0.1928923957263697,Quantum (Re-upload),"12m/6p, 2 stage(s)",38.264557123184204
+15,Re-uploading 1x,0.19619404571223578,Quantum (Re-upload),"12m/6p, 1 stage(s)",18.945730447769165
+16,QPU-Ascella 12m/6p,0.20475103769880715,Quantum (Standard),12m/6p,54.28941321372986
+17,Re-uploading 3x,0.21316866042589103,Quantum (Re-upload),"12m/6p, 3 stage(s)",56.262678146362305
