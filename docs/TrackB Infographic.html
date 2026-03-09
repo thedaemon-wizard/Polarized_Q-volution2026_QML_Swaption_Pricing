@@ -82,7 +82,7 @@
             </p>
             <div class="inline-block bg-gradient-to-r from-amber-500/20 to-red-500/20 border border-amber-500/40 rounded-full px-6 py-2">
                 <span class="text-amber-400 font-bold">Final Candidate:</span>
-                <span class="text-white font-semibold">Residual QRC (Belenos Noise Model)</span>
+                <span class="text-white font-semibold">QRC (Enriched Features, Belenos Noise)</span>
             </div>
         </div>
     </header>
@@ -90,17 +90,17 @@
     <!-- ========== KEY METRICS ========== -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="glass-card rounded-2xl p-5 text-center glow-cyan">
-            <div class="text-3xl md:text-4xl font-black text-cyan-400 mb-1">0.0088</div>
+            <div class="text-3xl md:text-4xl font-black text-cyan-400 mb-1">0.0104</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">Test RMSE</div>
             <div class="text-xs text-slate-500 mt-1">Ground Truth</div>
         </div>
         <div class="glass-card rounded-2xl p-5 text-center glow-pink">
-            <div class="text-3xl md:text-4xl font-black text-pink-400 mb-1">0.992</div>
+            <div class="text-3xl md:text-4xl font-black text-pink-400 mb-1">0.989</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">Test R&sup2;</div>
             <div class="text-xs text-slate-500 mt-1">Ground Truth</div>
         </div>
         <div class="glass-card rounded-2xl p-5 text-center glow-amber">
-            <div class="text-3xl md:text-4xl font-black text-amber-400 mb-1">17</div>
+            <div class="text-3xl md:text-4xl font-black text-amber-400 mb-1">26</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">Models Tested</div>
             <div class="text-xs text-slate-500 mt-1">Classical + Quantum</div>
         </div>
@@ -138,7 +138,7 @@
                         <span class="text-2xl">&#9883;</span>
                         <div>
                             <strong class="text-pink-500">Quantum Residual (QRC)</strong>
-                            <span class="block text-sm text-slate-400">Fixed photonic circuit corrects the remaining 5%. RMSE = 0.0432</span>
+                            <span class="block text-sm text-slate-400">Fixed photonic circuit + enriched features corrects the remaining 5%. RMSE = 0.0392</span>
                         </div>
                     </li>
                 </ul>
@@ -213,7 +213,7 @@
 
     <!-- ========== MODEL COMPARISON CHART ========== -->
     <section class="glass-card rounded-2xl p-6 md:p-10">
-        <h2 class="text-3xl font-bold mb-2 text-white">Model Comparison: 17 Configurations Tested</h2>
+        <h2 class="text-3xl font-bold mb-2 text-white">Model Comparison: 26 Configurations Tested</h2>
         <p class="text-slate-400 mb-6 text-sm">Validation RMSE across classical baselines, pure quantum, and hybrid architectures.</p>
         <div class="chart-container" style="max-width:100%; height:380px;">
             <canvas id="modelChart"></canvas>
@@ -236,13 +236,13 @@
                     <div class="bg-slate-800/50 rounded-lg p-4 border border-cyan-500/20">
                         <div class="flex justify-between items-center">
                             <span class="text-slate-400 text-sm">Overall Test RMSE</span>
-                            <span class="text-2xl font-black text-cyan-400">0.0088</span>
+                            <span class="text-2xl font-black text-cyan-400">0.0104</span>
                         </div>
                     </div>
                     <div class="bg-slate-800/50 rounded-lg p-4 border border-pink-500/20">
                         <div class="flex justify-between items-center">
                             <span class="text-slate-400 text-sm">Overall Test R&sup2;</span>
-                            <span class="text-2xl font-black text-pink-400">0.992</span>
+                            <span class="text-2xl font-black text-pink-400">0.989</span>
                         </div>
                     </div>
                     <div class="bg-slate-800/50 rounded-lg p-4 border border-amber-500/20">
@@ -282,7 +282,7 @@
                         <span class="text-pink-400 font-bold">Belenos</span>
                         <span class="text-xs text-slate-500">24m / 12p</span>
                     </div>
-                    <div class="text-xs text-slate-400">HOM 91.8% &bull; Transmittance 5.20% &bull; g2 2.1%</div>
+                    <div class="text-xs text-slate-400">HOM 90.2% &bull; Transmittance 5.25% &bull; g2 2.4%</div>
                     <div class="text-xs text-slate-500 mt-1">Status: calibration (noise model used)</div>
                 </div>
             </div>
@@ -365,6 +365,12 @@
                         <td class="py-2 px-3 text-right text-slate-500">&mdash;</td>
                     </tr>
                     <tr class="border-b border-slate-800">
+                        <td class="py-2 px-3 text-slate-300">Deep Learning</td>
+                        <td class="py-2 px-3 text-cyan-300">LSTM / Transformer</td>
+                        <td class="py-2 px-3 text-right text-slate-300">0.0474 / 0.0459</td>
+                        <td class="py-2 px-3 text-right text-slate-500">&mdash;</td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
                         <td class="py-2 px-3 text-slate-300">Trainable VQC</td>
                         <td class="py-2 px-3 text-violet-400">Residual Hybrid</td>
                         <td class="py-2 px-3 text-right text-slate-300">0.0432</td>
@@ -372,9 +378,15 @@
                     </tr>
                     <tr class="bg-slate-800/30 border-b border-slate-700">
                         <td class="py-2 px-3 text-white font-bold">Final Candidate</td>
-                        <td class="py-2 px-3 text-pink-400 font-bold">Residual QRC (Belenos)</td>
-                        <td class="py-2 px-3 text-right text-white font-bold">0.0432</td>
-                        <td class="py-2 px-3 text-right text-cyan-400 font-bold">0.0088</td>
+                        <td class="py-2 px-3 text-pink-400 font-bold">QRC (Enriched, Belenos)</td>
+                        <td class="py-2 px-3 text-right text-white font-bold">0.0392</td>
+                        <td class="py-2 px-3 text-right text-cyan-400 font-bold">0.0104</td>
+                    </tr>
+                    <tr class="bg-emerald-900/20 border-b border-emerald-700/30">
+                        <td class="py-2 px-3 text-emerald-400 font-bold">Best Overall</td>
+                        <td class="py-2 px-3 text-emerald-400 font-bold">QRC (Enriched Features)</td>
+                        <td class="py-2 px-3 text-right text-emerald-400 font-bold">0.0384</td>
+                        <td class="py-2 px-3 text-right text-slate-500">&mdash;</td>
                     </tr>
                 </tbody>
             </table>
@@ -428,15 +440,18 @@
 
     // === 2. Model Comparison Bar Chart ===
     const models = [
-        { name: 'Res. QRC\n(Belenos)', rmse: 0.0432, color: '#ec4899' },
-        { name: 'Res. QRC\n(Ascella)', rmse: 0.0432, color: '#f472b6' },
-        { name: 'Residual\nHybrid', rmse: 0.0432, color: '#8b5cf6' },
-        { name: 'Res. QRC\n(Ideal)', rmse: 0.0433, color: '#a78bfa' },
+        { name: 'QRC\n(Enriched)', rmse: 0.0384, color: '#10b981' },
+        { name: 'LR\n(Enriched)', rmse: 0.0396, color: '#34d399' },
+        { name: 'QRC Enriched\n(Belenos)', rmse: 0.0392, color: '#ec4899' },
+        { name: 'Res. QRC\n(Belenos)', rmse: 0.0432, color: '#f472b6' },
         { name: 'Linear\nRegression', rmse: 0.0437, color: '#06b6d4' },
-        { name: 'MLP\n(128,64,32)', rmse: 0.0489, color: '#22d3ee' },
+        { name: 'Ensemble\nQRC (N=5)', rmse: 0.0437, color: '#a78bfa' },
+        { name: 'Transformer', rmse: 0.0459, color: '#22d3ee' },
+        { name: 'LSTM', rmse: 0.0474, color: '#67e8f9' },
+        { name: 'MLP\n(128,64,32)', rmse: 0.0489, color: '#94a3b8' },
         { name: 'QRC Pure\n(Ideal)', rmse: 0.1871, color: '#f59e0b' },
-        { name: 'Best VQC\n(16m/8p)', rmse: 0.1898, color: '#fbbf24' },
-        { name: 'Re-upload\n2x', rmse: 0.1929, color: '#fcd34d' },
+        { name: 'Best VQC\n(20m/10p)', rmse: 0.1864, color: '#fbbf24' },
+        { name: 'Q. Kernel\n(6m/3p)', rmse: 0.2294, color: '#fcd34d' },
     ];
     new Chart(document.getElementById('modelChart').getContext('2d'), {
         type: 'bar',
@@ -466,7 +481,7 @@
             },
             scales: {
                 y: {
-                    beginAtZero: true, max: 0.22,
+                    beginAtZero: true, max: 0.25,
                     grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } },
                     title: { display: true, text: 'RMSE', color: tickColor }
                 },

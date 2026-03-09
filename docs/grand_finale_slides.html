@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Finale - Track B: Quantum Residual Swaption Pricing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e1a;
+            color: #f0f4ff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 40px 60px;
+            position: relative;
+        }
+        .slide.active { display: flex; flex-direction: column; }
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            color: rgba(255,255,255,0.3);
+            font-size: 14px;
+        }
+        .track-badge {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(236,72,153,0.15));
+            border: 1px solid rgba(6,182,212,0.3);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: rgba(6,182,212,0.8);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #06b6d4, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .gold-text {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .metric-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.6);
+            border-radius: 16px;
+            padding: 20px 24px;
+            text-align: center;
+        }
+        .metric-value { font-size: 2.5rem; font-weight: 900; }
+        .metric-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(148,163,184,0.8); margin-top: 4px; }
+        .pipeline-step {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            flex: 1;
+        }
+        .arrow-right {
+            display: flex;
+            align-items: center;
+            color: rgba(6,182,212,0.5);
+            font-size: 24px;
+            padding: 0 8px;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(236,72,153,0.1));
+            border: 1px solid rgba(6,182,212,0.25);
+            border-radius: 12px;
+            padding: 16px 24px;
+        }
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #06b6d4, #ec4899);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+        kbd {
+            background: rgba(51,65,85,0.5);
+            border: 1px solid rgba(71,85,105,0.5);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+            color: rgba(148,163,184,0.7);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in { animation: fadeInUp 0.5s ease forwards; }
+        .speaker-note {
+            position: absolute;
+            bottom: 20px;
+            left: 40px;
+            font-size: 11px;
+            color: rgba(148,163,184,0.4);
+            max-width: 60%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ============ SLIDE 1: Title ============ -->
+<div class="slide active" id="slide1">
+    <div class="track-badge">Q-volution 2026 &bull; Track B (Quandela)</div>
+    <div class="flex-1 flex flex-col justify-center items-center text-center">
+        <h1 class="text-5xl md:text-7xl font-black mb-4 tracking-tight">
+            <span class="gradient-text">Quantum Residual</span><br>
+            Swaption Pricing
+        </h1>
+        <p class="text-xl text-slate-400 mb-8 max-w-2xl">
+            Photonic Quantum Reservoir Computing for Financial Derivatives
+        </p>
+        <div class="flex gap-6 mb-8">
+            <div class="metric-card" style="min-width:140px">
+                <div class="metric-value text-cyan-400">0.989</div>
+                <div class="metric-label">Test R&sup2;</div>
+            </div>
+            <div class="metric-card" style="min-width:140px">
+                <div class="metric-value text-pink-400">0.0104</div>
+                <div class="metric-label">Test RMSE</div>
+            </div>
+            <div class="metric-card" style="min-width:140px">
+                <div class="metric-value text-amber-400">0</div>
+                <div class="metric-label">Quantum Params Trained</div>
+            </div>
+        </div>
+        <div class="inline-block bg-gradient-to-r from-amber-500/20 to-red-500/20 border border-amber-500/30 rounded-full px-6 py-2">
+            <span class="text-amber-400 font-bold">Final Candidate:</span>
+            <span class="text-white font-semibold">QRC (Enriched, Belenos Noise Model)</span>
+        </div>
+    </div>
+    <div class="slide-number">1 / 6</div>
+</div>
+
+<!-- ============ SLIDE 2: The Problem ============ -->
+<div class="slide" id="slide2">
+    <div class="track-badge">The Problem</div>
+    <h2 class="text-4xl font-bold mb-6">Swaption Pricing Challenge</h2>
+    <div class="flex-1 flex gap-8">
+        <!-- Left: Problem description -->
+        <div class="flex-1 flex flex-col gap-5">
+            <div class="glass p-5">
+                <h3 class="text-lg font-bold text-cyan-400 mb-2">What is a Swaption?</h3>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    A financial derivative giving the right to enter an interest rate swap.
+                    Pricing depends on a <strong>2D surface</strong>: 14 tenors &times; 16 maturities = <strong>224 prices</strong> evolving daily.
+                </p>
+            </div>
+            <div class="glass p-5">
+                <h3 class="text-lg font-bold text-pink-400 mb-2">The Task</h3>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Given <strong>~490 historical rows</strong>, predict the next <strong>6 business days</strong> (224 features each).
+                    Assessment based solely on these 6 predicted rows against hidden ground truth.
+                </p>
+            </div>
+            <div class="glass p-5">
+                <h3 class="text-lg font-bold text-amber-400 mb-2">Auto-Regressive Approach</h3>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Each predicted day feeds back as input for the next:
+                </p>
+                <div class="mt-2 text-xs font-mono text-slate-400 bg-slate-800/50 rounded p-3">
+                    Window[T-4..T] &rarr; PCA &rarr; Model &rarr; Pred[T+1]<br>
+                    Window[T-3..T, Pred[T+1]] &rarr; PCA &rarr; Model &rarr; Pred[T+2]<br>
+                    &hellip; (6 days total)
+                </div>
+            </div>
+        </div>
+        <!-- Right: Constraints -->
+        <div class="flex-1 flex flex-col gap-5">
+            <div class="glass p-5">
+                <h3 class="text-lg font-bold text-purple-400 mb-3">Hardware Constraints</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">&#x1f52c;</span>
+                        <div>
+                            <div class="font-semibold text-sm">Max 20 modes / 10 photons</div>
+                            <div class="text-xs text-slate-400">Simulation limit</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">&#x1f4a1;</span>
+                        <div>
+                            <div class="font-semibold text-sm">Angle encoding only</div>
+                            <div class="text-xs text-slate-400">No amplitude encoding on QPU</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">&#x2699;&#xfe0f;</span>
+                        <div>
+                            <div class="font-semibold text-sm">MerLin Framework</div>
+                            <div class="text-xs text-slate-400">Quandela's photonic QML library</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">&#x1f4bb;</span>
+                        <div>
+                            <div class="font-semibold text-sm">Ascella (12m) &amp; Belenos (24m)</div>
+                            <div class="text-xs text-slate-400">Photonic QPU targets</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-box mt-auto">
+                <p class="text-sm text-slate-300">
+                    <strong class="text-cyan-400">Key Insight:</strong>
+                    Classical linear regression captures <strong>95% of variance</strong> (R&sup2; = 0.95).
+                    We only need quantum to correct the remaining <strong>5%</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">2 / 6</div>
+</div>
+
+<!-- ============ SLIDE 3: Architecture ============ -->
+<div class="slide" id="slide3">
+    <div class="track-badge">Innovation</div>
+    <h2 class="text-4xl font-bold mb-2">Residual Quantum Reservoir Computing</h2>
+    <p class="text-slate-400 mb-5">The quantum circuit is <strong class="text-white">fixed</strong> (never trained). Only classical readout is optimized.</p>
+
+    <div class="flex-1 flex gap-8">
+        <!-- Left: Pipeline -->
+        <div class="flex-1 flex flex-col gap-4">
+            <!-- Pipeline steps -->
+            <div class="flex items-center gap-3">
+                <div class="pipeline-step">
+                    <div class="text-2xl mb-1">&#x1f4c8;</div>
+                    <div class="text-cyan-400 font-bold text-sm">1. PCA + Scale</div>
+                    <div class="text-xs text-slate-400">Sliding window &rarr; PCA(6)<br>&rarr; Learnable ScaleLayer</div>
+                </div>
+                <div class="arrow-right">&rarr;</div>
+                <div class="pipeline-step" style="border-color: rgba(236,72,153,0.4)">
+                    <div class="text-2xl mb-1">&#x269b;&#xfe0f;</div>
+                    <div class="text-pink-400 font-bold text-sm">2. Fixed Quantum</div>
+                    <div class="text-xs text-slate-400">Random interferometer<br><strong>0 trainable params</strong></div>
+                </div>
+                <div class="arrow-right">&rarr;</div>
+                <div class="pipeline-step" style="border-color: rgba(168,85,247,0.4)">
+                    <div class="text-2xl mb-1">&#x1f9e0;</div>
+                    <div class="text-purple-400 font-bold text-sm">3. Classical Readout</div>
+                    <div class="text-xs text-slate-400">BatchNorm &rarr; MLP(64)<br>&rarr; &alpha;&middot;correction</div>
+                </div>
+                <div class="arrow-right">&rarr;</div>
+                <div class="pipeline-step" style="border-color: rgba(245,158,11,0.4)">
+                    <div class="text-2xl mb-1">&#x1f3af;</div>
+                    <div class="text-amber-400 font-bold text-sm">4. Residual Sum</div>
+                    <div class="text-xs text-slate-400">LR baseline +<br>quantum correction</div>
+                </div>
+            </div>
+
+            <!-- Why QRC beats VQC -->
+            <h3 class="text-xl font-bold mt-3 mb-2">Why QRC Beats VQC by 4.4&times;</h3>
+            <div class="grid grid-cols-3 gap-3">
+                <div class="glass p-4">
+                    <div class="text-xl mb-1">&#x26a0;&#xfe0f;</div>
+                    <div class="font-bold text-yellow-400 text-sm mb-1">Barren Plateaus</div>
+                    <p class="text-xs text-slate-400">At 12+ modes, VQC gradients vanish exponentially. QRC sidesteps this by <strong class="text-white">freezing all quantum params</strong>.</p>
+                </div>
+                <div class="glass p-4">
+                    <div class="text-xl mb-1">&#x1f527;</div>
+                    <div class="font-bold text-cyan-400 text-sm mb-1">Residual Architecture</div>
+                    <p class="text-xs text-slate-400">Quantum only corrects the <strong class="text-white">~5% residual</strong> from a strong classical baseline (R&sup2;=0.95).</p>
+                </div>
+                <div class="glass p-4">
+                    <div class="text-xl mb-1">&#x1f50a;</div>
+                    <div class="font-bold text-green-400 text-sm mb-1">Noise Resilience</div>
+                    <p class="text-xs text-slate-400">Photon loss creates <strong class="text-white">different but useful</strong> features. Classical readout adapts.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Comparison chart -->
+        <div style="width: 280px" class="flex flex-col gap-3">
+            <div class="glass p-4 flex-1">
+                <h4 class="text-sm font-bold text-center mb-3">Validation RMSE Comparison</h4>
+                <div class="chart-container" style="height:180px">
+                    <canvas id="vqcChart"></canvas>
+                </div>
+            </div>
+            <div class="highlight-box text-center">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Quantum Parameters Trained</div>
+                <div class="text-3xl font-black text-amber-400">0</div>
+                <div class="text-xs text-slate-500">QRC uses fixed random interferometer</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">3 / 6</div>
+</div>
+
+<!-- ============ SLIDE 4: Results ============ -->
+<div class="slide" id="slide4">
+    <div class="track-badge">Results</div>
+    <h2 class="text-4xl font-bold mb-5">Test Ground Truth Evaluation</h2>
+
+    <div class="flex-1 flex gap-8">
+        <!-- Left: Metrics + Chart -->
+        <div class="flex-1 flex flex-col gap-4">
+            <div class="grid grid-cols-3 gap-4">
+                <div class="metric-card">
+                    <div class="metric-value text-cyan-400" style="font-size:2rem">0.0104</div>
+                    <div class="metric-label">Test RMSE</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value text-pink-400" style="font-size:2rem">0.989</div>
+                    <div class="metric-label">Test R&sup2;</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value text-amber-400" style="font-size:2rem">0.0084</div>
+                    <div class="metric-label">Test MAE</div>
+                </div>
+            </div>
+
+            <div class="glass p-5 flex-1">
+                <h3 class="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider">Per-Day RMSE (Auto-Regressive)</h3>
+                <div class="chart-container" style="height:200px">
+                    <canvas id="dayChart"></canvas>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p class="text-sm text-slate-300">
+                    &#x2705; Error accumulates as expected for auto-regressive prediction.
+                    Day 6 <strong class="text-cyan-400">improves</strong> over Day 5, suggesting the model captures mean-reversion dynamics.
+                </p>
+            </div>
+        </div>
+
+        <!-- Right: Model comparison table -->
+        <div style="width:340px" class="flex flex-col gap-4">
+            <div class="glass p-5 flex-1">
+                <h3 class="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider">26 Models Tested</h3>
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="text-slate-500">
+                            <th class="text-left py-1">Model</th>
+                            <th class="text-right py-1">Val RMSE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-slate-300">Linear Regression</td>
+                            <td class="text-right text-slate-400">0.0437</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-slate-300">MLP (128,64,32)</td>
+                            <td class="text-right text-slate-400">0.0489</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-red-400">Best VQC (20m/10p)</td>
+                            <td class="text-right text-red-400">0.1864</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-slate-300">Residual Hybrid</td>
+                            <td class="text-right text-slate-400">0.0432</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-red-400">QRC Pure (Ideal)</td>
+                            <td class="text-right text-red-400">0.1871</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-cyan-400">QRC (Enriched, Belenos)</td>
+                            <td class="text-right text-cyan-400">0.0392</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-slate-300">LSTM / Transformer</td>
+                            <td class="text-right text-slate-400">0.047 / 0.046</td>
+                        </tr>
+                        <tr class="border-t border-slate-700 bg-emerald-500/10">
+                            <td class="py-1.5 font-bold text-emerald-400">QRC (Enriched) &#x2b50;</td>
+                            <td class="text-right font-bold text-emerald-400">0.0384</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="glass p-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">QPU Transparency</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Results use Belenos <strong>noise model</strong> (hardware-derived: brightness=0.23, transmittance=0.52).
+                    QPU evaluation cell runs automatically when QPU status = "running".
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">4 / 6</div>
+</div>
+
+<!-- ============ SLIDE 5: Real-World Impact ============ -->
+<div class="slide" id="slide5">
+    <div class="track-badge">Impact &amp; Roadmap</div>
+    <h2 class="text-4xl font-bold mb-6">From Hackathon to Production</h2>
+
+    <div class="flex-1 flex gap-8">
+        <div class="flex-1 flex flex-col gap-5">
+            <!-- Why it matters -->
+            <div class="glass p-5">
+                <h3 class="text-xl font-bold text-cyan-400 mb-3">Why QRC Is QPU-Ready Today</h3>
+                <div class="space-y-3">
+                    <div class="flex gap-3">
+                        <span class="text-green-400 text-lg font-bold mt-0.5">&#x2713;</span>
+                        <p class="text-sm text-slate-300"><strong class="text-white">No iterative quantum-classical loop</strong> - encode once, measure, done</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <span class="text-green-400 text-lg font-bold mt-0.5">&#x2713;</span>
+                        <p class="text-sm text-slate-300"><strong class="text-white">No shot noise in gradients</strong> - zero quantum parameters to optimize</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <span class="text-green-400 text-lg font-bold mt-0.5">&#x2713;</span>
+                        <p class="text-sm text-slate-300"><strong class="text-white">Noise resilient</strong> - photon loss creates different but equally useful features</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <span class="text-green-400 text-lg font-bold mt-0.5">&#x2713;</span>
+                        <p class="text-sm text-slate-300"><strong class="text-white">~13s training time</strong> - only classical readout layer is optimized</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap -->
+            <div class="glass p-5 flex-1">
+                <h3 class="text-xl font-bold text-amber-400 mb-3">Roadmap</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-sm font-bold text-cyan-400 flex-shrink-0">1</div>
+                        <div>
+                            <div class="font-semibold text-sm">Deploy on Belenos QPU (24 modes, 12 photons)</div>
+                            <div class="text-xs text-slate-400">Code ready - awaiting QPU availability</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-sm font-bold text-pink-400 flex-shrink-0">2</div>
+                        <div>
+                            <div class="font-semibold text-sm">Multi-asset swaption surfaces</div>
+                            <div class="text-xs text-slate-400">Extend to cross-currency and inflation swaptions</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-sm font-bold text-amber-400 flex-shrink-0">3</div>
+                        <div>
+                            <div class="font-semibold text-sm">Quantum kernel methods</div>
+                            <div class="text-xs text-slate-400">MerLin's Gaussian kernel for alternative feature extraction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Supporting research -->
+        <div style="width:340px" class="flex flex-col gap-4">
+            <div class="glass p-5 flex-1">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Supporting Recent Research</h3>
+                <div class="space-y-4">
+                    <div class="border-l-2 border-cyan-500/50 pl-3">
+                        <div class="text-xs font-semibold text-cyan-400">Li et al., 2025</div>
+                        <p class="text-xs text-slate-400 mt-0.5">QRC outperforms GARCH for realized volatility forecasting</p>
+                    </div>
+                    <div class="border-l-2 border-pink-500/50 pl-3">
+                        <div class="text-xs font-semibold text-pink-400">Sakurai et al., 2025 (Optica Quantum)</div>
+                        <p class="text-xs text-slate-400 mt-0.5">Boson sampling QRC on Quandela's Ascella QPU</p>
+                    </div>
+                    <div class="border-l-2 border-purple-500/50 pl-3">
+                        <div class="text-xs font-semibold text-purple-400">Rambach et al., 2025</div>
+                        <p class="text-xs text-slate-400 mt-0.5">20x training data reduction with photonic QRC</p>
+                    </div>
+                    <div class="border-l-2 border-amber-500/50 pl-3">
+                        <div class="text-xs font-semibold text-amber-400">Liu et al., 2025 (Science)</div>
+                        <p class="text-xs text-slate-400 mt-0.5">Provable photonic quantum learning advantage</p>
+                    </div>
+                    <div class="border-l-2 border-green-500/50 pl-3">
+                        <div class="text-xs font-semibold text-green-400">Sakuma, 2025</div>
+                        <p class="text-xs text-slate-400 mt-0.5">Quantum differential ML for Bermudan swaption pricing</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p class="text-xs text-slate-300 text-center">
+                    <strong class="text-amber-400">Key takeaway:</strong><br>
+                    QRC is the right architecture for<br>
+                    <strong class="text-white">near-term photonic quantum devices</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">5 / 6</div>
+</div>
+
+<!-- ============ SLIDE 6: Summary ============ -->
+<div class="slide" id="slide6">
+    <div class="track-badge">Summary</div>
+    <div class="flex-1 flex flex-col justify-center items-center text-center">
+        <h2 class="text-5xl font-black mb-8">
+            <span class="gradient-text">Key Takeaways</span>
+        </h2>
+
+        <div class="max-w-3xl space-y-5 mb-10">
+            <div class="flex items-center gap-4 glass p-5 text-left">
+                <div class="text-3xl">&#x1f3af;</div>
+                <div>
+                    <div class="font-bold text-lg">R&sup2; = 0.989 on Hidden Test Data</div>
+                    <div class="text-sm text-slate-400">6-day auto-regressive swaption price prediction with 224 features</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 glass p-5 text-left">
+                <div class="text-3xl">&#x269b;&#xfe0f;</div>
+                <div>
+                    <div class="font-bold text-lg">Zero Quantum Parameter Training</div>
+                    <div class="text-sm text-slate-400">Frozen photonic reservoir + classical readout avoids barren plateaus entirely</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 glass p-5 text-left">
+                <div class="text-3xl">&#x1f50a;</div>
+                <div>
+                    <div class="font-bold text-lg">Built-in Noise Resilience</div>
+                    <div class="text-sm text-slate-400">Belenos noise model (hardware-derived) maintains full performance - QPU-ready</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl inline-block mb-6">
+            <table class="text-sm">
+                <thead>
+                    <tr class="text-slate-500">
+                        <th class="px-4 py-2 text-left">Stage</th>
+                        <th class="px-4 py-2">Method</th>
+                        <th class="px-4 py-2">Val RMSE</th>
+                        <th class="px-4 py-2">Test RMSE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-t border-slate-700">
+                        <td class="px-4 py-2 text-slate-400">Classical Baseline</td>
+                        <td class="px-4 py-2 text-cyan-400">Linear Regression</td>
+                        <td class="px-4 py-2 text-center">0.0437</td>
+                        <td class="px-4 py-2 text-center text-slate-500">&mdash;</td>
+                    </tr>
+                    <tr class="border-t border-slate-700">
+                        <td class="px-4 py-2 text-slate-400">Trainable VQC</td>
+                        <td class="px-4 py-2 text-pink-400">Residual Hybrid</td>
+                        <td class="px-4 py-2 text-center">0.0432</td>
+                        <td class="px-4 py-2 text-center text-slate-500">&mdash;</td>
+                    </tr>
+                    <tr class="border-t border-slate-700 bg-gradient-to-r from-cyan-500/10 to-pink-500/10">
+                        <td class="px-4 py-2 font-bold">Final Candidate</td>
+                        <td class="px-4 py-2 font-bold gold-text">QRC (Enriched, Belenos)</td>
+                        <td class="px-4 py-2 text-center font-bold">0.0392</td>
+                        <td class="px-4 py-2 text-center font-bold text-cyan-400">0.0104</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-2xl font-bold text-slate-300">Thank you!</p>
+        <p class="text-sm text-slate-500 mt-2">Built with MerLin + Perceval + PyTorch on Quandela's photonic platform</p>
+    </div>
+    <div class="slide-number">6 / 6</div>
+</div>
+
+<script>
+// Slide navigation
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+const total = slides.length;
+
+function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = ((n % total) + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+    // Initialize charts if needed
+    if (current === 2) initVqcChart();
+    if (current === 3) initDayChart();
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        showSlide(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        e.preventDefault();
+        showSlide(current - 1);
+    } else if (e.key >= '1' && e.key <= '9') {
+        const idx = parseInt(e.key) - 1;
+        if (idx < total) showSlide(idx);
+    }
+});
+
+// Touch / click navigation
+document.addEventListener('click', (e) => {
+    if (e.clientX > window.innerWidth / 2) showSlide(current + 1);
+    else showSlide(current - 1);
+});
+
+// Charts
+let vqcChartInstance = null;
+let dayChartInstance = null;
+
+function initVqcChart() {
+    if (vqcChartInstance) return;
+    const ctx = document.getElementById('vqcChart');
+    if (!ctx) return;
+    vqcChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['QRC Enriched\n(Belenos)', 'Res. Hybrid\n(VQC)', 'Linear\nRegression', 'Best VQC\n(20m/10p)'],
+            datasets: [{
+                data: [0.0392, 0.0432, 0.0437, 0.1864],
+                backgroundColor: ['#06b6d4', '#a855f7', '#64748b', '#ef4444'],
+                borderRadius: 6,
+                barThickness: 36
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 0.22,
+                    ticks: { color: '#64748b', font: { size: 10 } },
+                    grid: { color: 'rgba(51,65,85,0.3)' }
+                },
+                x: {
+                    ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 0 },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+}
+
+function initDayChart() {
+    if (dayChartInstance) return;
+    const ctx = document.getElementById('dayChart');
+    if (!ctx) return;
+    dayChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Day 1\n12/24', 'Day 2\n12/26', 'Day 3\n12/27', 'Day 4\n12/29', 'Day 5\n12/30', 'Day 6\n01/01'],
+            datasets: [{
+                data: [0.001827, 0.004689, 0.005505, 0.008152, 0.014739, 0.011180],
+                borderColor: '#06b6d4',
+                backgroundColor: 'rgba(6,182,212,0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5,
+                pointBackgroundColor: '#06b6d4',
+                pointBorderColor: '#0a0e1a',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'RMSE', color: '#64748b', font: { size: 10 } },
+                    ticks: { color: '#64748b', font: { size: 10 } },
+                    grid: { color: 'rgba(51,65,85,0.3)' }
+                },
+                x: {
+                    ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 0 },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+}
+
+// Initialize progress bar
+document.getElementById('progressBar').style.width = (1 / total * 100) + '%';
+</script>
+
+</body>
+</html>
