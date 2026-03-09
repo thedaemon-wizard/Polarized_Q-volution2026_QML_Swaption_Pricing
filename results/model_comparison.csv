@@ -1,27 +1,27 @@
 ,Model,RMSE,Category,Config,Time_s
-1,"QRC (Enriched, Ideal)",0.03838157288888225,QRC (Enriched),12m/6p + enriched features,30.0
-2,"QRC (Enriched, belenos)",0.03916670229951452,QRC (Enriched + Noise),12m/6p + enriched + belenos noise,79.21411323547363
-3,Final Retrained (best),0.03916670229951452,Final,best architecture retrained 80 epochs,13.210098505020142
-4,"QRC (Enriched, ascella)",0.03923513404779157,QRC (Enriched + Noise),12m/6p + enriched + ascella noise,84.87770056724548
-5,"QRC (Enriched, ideal)",0.03925023563296816,QRC (Enriched + Noise),12m/6p + enriched + ideal noise,41.27906394004822
+1,"QRC (Enriched, Ideal)",0.03838157213060611,QRC (Enriched),12m/6p + enriched features,30.0
+2,"QRC (Enriched, belenos)",0.039167638935419344,QRC (Enriched + Noise),12m/6p + enriched + belenos noise,103.98801445960999
+3,Final Retrained (best),0.039167638935419344,Final,best architecture retrained 80 epochs,13.94024133682251
+4,"QRC (Enriched, ascella)",0.03923513404779157,QRC (Enriched + Noise),12m/6p + enriched + ascella noise,110.29333877563477
+5,"QRC (Enriched, ideal)",0.03925023563296816,QRC (Enriched + Noise),12m/6p + enriched + ideal noise,63.49889588356018
 6,LR (Enriched Features),0.03958333847684785,Classical,rolling stats + momentum,0.1
-7,Residual QRC (Belenos),0.04316112716811226,QRC,"12m/6p, belenos",131.87081718444824
-8,Residual QRC (Ascella),0.04316892852692266,QRC,"12m/6p, ascella",130.0150682926178
-9,Residual Hybrid,0.04324184406819551,Hybrid,"12m/6p, alpha=0.0536",73.6990475654602
-10,Residual QRC (Ideal),0.04329032714917161,QRC,"12m/6p, none",12.466378450393677
-11,Ensemble QRC (N=5),0.04367890669865627,QRC (Ensemble),"5 random reservoirs, avg",63.89742159843445
-12,Linear Regression,0.04371489144323422,Classical,PCA(6),0.09294462203979492
-13,Transformer Baseline,0.04591497449277854,Classical (DL),"d=64,h=4,L=2, PCA(6)/step",1.8585593700408936
-14,LSTM Baseline,0.0473715314733809,Classical (DL),"LSTM(64,2), PCA(6)/step",1.0474340915679932
-15,"MLP (128, 64, 32)",0.04887818393053144,Classical,PCA(6),0.10178327560424805
-16,"MLP (64, 32)",0.05066389038980231,Classical,PCA(6),0.17234182357788086
-17,Max 20m/10p,0.18640538856450392,Quantum (Standard),20m/10p,176.03688430786133
-18,QRC Pure (Ideal),0.18706666771601357,QRC,"12m/6p, none",12.40292239189148
-19,Large 16m/8p,0.18929001580444288,Quantum (Standard),16m/8p,89.83250975608826
-20,Medium 10m/5p,0.19060031142764128,Quantum (Standard),10m/5p,35.00206208229065
-21,Small 6m/3p,0.1924833020757027,Quantum (Standard),6m/3p,14.151148319244385
-22,Re-uploading 2x,0.19289146086437156,Quantum (Re-upload),"12m/6p, 2 stage(s)",35.49198842048645
-23,Re-uploading 1x,0.1961940682602288,Quantum (Re-upload),"12m/6p, 1 stage(s)",18.448068141937256
-24,QPU-Ascella 12m/6p,0.2047348942195827,Quantum (Standard),12m/6p,50.131691694259644
-25,Re-uploading 3x,0.21358982808824595,Quantum (Re-upload),"12m/6p, 3 stage(s)",53.30427360534668
-26,Quantum Kernel (Fidelity),0.22936457068460603,Quantum (Kernel),"6m/3p, KernelRidge",0.24350643157958984
+7,Residual QRC (Belenos),0.04314778395063627,QRC,"12m/6p, belenos",179.83385491371155
+8,Residual QRC (Ascella),0.043152114457320395,QRC,"12m/6p, ascella",172.18992924690247
+9,Residual Hybrid,0.04324184406819551,Hybrid,"12m/6p, alpha=0.0536",82.82455229759216
+10,Residual QRC (Ideal),0.04329032714917161,QRC,"12m/6p, none",13.726730346679688
+11,Ensemble QRC (N=5),0.04367890669865627,QRC (Ensemble),"5 random reservoirs, avg",69.59250521659851
+12,Linear Regression,0.04371489144323422,Classical,PCA(6),0.0939326286315918
+13,Transformer Baseline,0.04591497449277854,Classical (DL),"d=64,h=4,L=2, PCA(6)/step",2.4450523853302
+14,LSTM Baseline,0.0473715314733809,Classical (DL),"LSTM(64,2), PCA(6)/step",1.216078758239746
+15,"MLP (128, 64, 32)",0.04887818393053144,Classical,PCA(6),0.11215615272521973
+16,"MLP (64, 32)",0.05066389038980231,Classical,PCA(6),0.20619797706604004
+17,Large 16m/8p,0.18585684696517044,Quantum (Standard),16m/8p,89.53054141998291
+18,QRC Pure (Ideal),0.18706666771601357,QRC,"12m/6p, none",13.48760724067688
+19,Max 20m/10p,0.18740813915759713,Quantum (Standard),20m/10p,186.60768842697144
+20,Medium 10m/5p,0.1882910374342211,Quantum (Standard),10m/5p,35.974443435668945
+21,Small 6m/3p,0.1924834242467549,Quantum (Standard),6m/3p,14.819379806518555
+22,Re-uploading 2x,0.1928922243252838,Quantum (Re-upload),"12m/6p, 2 stage(s)",38.14648985862732
+23,Re-uploading 1x,0.19619406351328314,Quantum (Re-upload),"12m/6p, 1 stage(s)",20.56490421295166
+24,QPU-Ascella 12m/6p,0.20475080572206728,Quantum (Standard),12m/6p,50.79849934577942
+25,Re-uploading 3x,0.21316884173711348,Quantum (Re-upload),"12m/6p, 3 stage(s)",56.36592960357666
+26,Quantum Kernel (Fidelity),0.22936457068460603,Quantum (Kernel),"6m/3p, KernelRidge",0.30933165550231934

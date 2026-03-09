@@ -112,6 +112,20 @@ validation RMSE (0.0392) with QPU noise validation and excellent test ground tru
 (RMSE 0.0104, R² 0.989). The enriched features (rolling statistics + momentum) improved
 prediction by ~9% over the baseline QRC.
 
+### Optimizer Strategy: Why Adam is Correct for QRC
+
+In QRC, the quantum circuit is **frozen** — only classical readout layers (BatchNorm, MLP,
+ScaleLayer, alpha) are trained. Noise-aware quantum optimizers (SPSA, QN-SPSA, Photonic PSR
+[20b, 20c]) address gradient estimation *through* noisy quantum measurements, which is
+unnecessary when quantum parameters are fixed. Adam [15b] handles mini-batch stochasticity
+in the classical gradient computation, which is the dominant noise source in our pipeline.
+
+This approach is validated by Quandela's own QORC paper [24], which uses AdaGrad for
+classical readout, and MerLin [1], which explicitly recommends PyTorch Adam/SGD over
+SPSA for differentiable training. QRC noise resilience literature [24b, 24c] further
+confirms that quantum noise acts as implicit regularization rather than a gradient
+estimation problem.
+
 ### Why Residual QRC Outperforms Pure VQC
 
 Our experiments reveal a striking result: **Residual QRC (RMSE 0.043) dramatically outperforms
@@ -125,8 +139,8 @@ pure VQC (RMSE ~0.19)**, despite training zero quantum parameters. Three factors
    baseline (Linear Regression, R2 0.95), we only ask the quantum component to model the ~5%
    residual variance. This is a fundamentally easier task than predicting prices from scratch.
 
-3. **Noise Resilience in Photonic Circuits**: The Belenos noise model (brightness=0.2311,
-   transmittance=0.5250) actually preserves or slightly improves QRC performance. This is because
+3. **Noise Resilience in Photonic Circuits**: The Belenos noise model (brightness=0.2390,
+   transmittance=0.5290) actually preserves or slightly improves QRC performance. This is because
    QRC treats the quantum circuit as a fixed feature extractor; photon loss and imperfect
    interference simply create a different (but equally useful) feature space. The classical
    readout adapts to whatever features the noisy circuit provides.
@@ -145,6 +159,7 @@ on hardware, making it ideal for near-term photonic quantum devices.
 | **Architecture** | Residual hybrid (classical + quantum correction) |
 | **QRC** | Fixed random interferometer + classical readout (no barren plateaus) |
 | **Normalization** | MinMax [0,1] input + BatchNorm on quantum output |
+| **Optimizer** | Adam [15b] (correct for QRC: classical-only gradients) |
 | **Training** | CosineAnnealing LR, Huber loss, gradient clipping |
 | **Max Scale** | 20 modes / 10 photons (184,756 quantum output dim) |
 | **QPU Noise** | Hardware-derived from Ascella and Belenos QPUs |
@@ -187,7 +202,7 @@ Window[Pred[T+1..T+4], Pred[T+5]] -> PCA -> Model -> Pred[T+6]
 **Validation RMSE: 0.0392 | Test RMSE: 0.0104 | Test R² = 0.989**
 
 The best model combines **enriched features** (rolling statistics + momentum) with the
-**Belenos QPU noise model** (brightness=0.2311, transmittance=0.5250). The enriched features
+**Belenos QPU noise model** (brightness=0.2390, transmittance=0.5290). The enriched features
 improved validation RMSE by 9.4% over the original QRC, and noise model validation
 confirms QPU-deployability.
 
@@ -205,14 +220,14 @@ confirms QPU-deployability.
 | **QRC (Enriched, Belenos)** | **0.0392** | -- | **Final Candidate** |
 | QRC (Enriched, Ascella) | 0.0392 | -- | Enriched + Noise |
 | LR (Enriched Features) | 0.0396 | -- | Classical + Features |
-| Residual QRC (Belenos) | 0.0432 | -- | Reservoir + Noise |
+| Residual QRC (Belenos) | 0.0431 | -- | Reservoir + Noise |
 | Residual QRC (Ascella) | 0.0432 | -- | Reservoir + Noise |
 | Residual Hybrid (VQC) | 0.0432 | 0.950 | Quantum + Classical |
 | Residual QRC (Ideal) | 0.0433 | -- | Reservoir + Classical |
 | Linear Regression | 0.0437 | 0.950 | Classical |
 | Ensemble QRC (N=5) | 0.0437 | -- | Ensemble Reservoir |
-| Transformer (d=64, 4-head) | 0.0459 | -- | Deep Learning |
-| LSTM (hidden=64, 2-layer) | 0.0474 | -- | Deep Learning |
+| Transformer (d=64, 4-head) [26, 26c] | 0.0459 | -- | Deep Learning |
+| LSTM (hidden=64, 2-layer) [25] | 0.0474 | -- | Deep Learning |
 | MLP (128, 64, 32) | 0.0489 | -- | Classical |
 | Standard Quantum (best) | 0.1864 | -- | Quantum only |
 | QRC Pure (Ideal) | 0.1871 | -- | Reservoir only |
@@ -290,7 +305,7 @@ and `noise_comparison.csv` (Time_s column).
 | QPU/Config | Brightness | Transmittance | RMSE | Time |
 |------------|-----------|--------------|------|------|
 | Ascella | 0.1033 | 0.2440 | 0.1833 | 77s |
-| Belenos | 0.2311 | 0.5250 | 0.1843 | 75s |
+| Belenos | 0.2390 | 0.5290 | 0.1843 | 75s |
 | Ideal | 1.0000 | 1.0000 | 0.1920 | 45s |
 
 Noise parameters derived from live QPU hardware metrics (HOM, Transmittance, g2).
@@ -299,10 +314,10 @@ Noise parameters derived from live QPU hardware metrics (HOM, Transmittance, g2)
 
 | Model | RMSE | Time | Noise | Quantum Params Trained |
 |-------|------|------|-------|----------------------|
-| QRC Pure (Ideal) | 0.1871 | 12s | None | 0 (fixed) |
-| Residual QRC (Ideal) | 0.0433 | 12s | None | 0 (fixed) |
-| Residual QRC (Ascella) | 0.0432 | 129s | Ascella QPU | 0 (fixed) |
-| Residual QRC (Belenos) | 0.0432 | 131s | Belenos QPU | 0 (fixed) |
+| QRC Pure (Ideal) | 0.1871 | 13s | None | 0 (fixed) |
+| Residual QRC (Ideal) | 0.0433 | 13s | None | 0 (fixed) |
+| Residual QRC (Ascella) | 0.0432 | 128s | Ascella QPU | 0 (fixed) |
+| Residual QRC (Belenos) | 0.0431 | 124s | Belenos QPU | 0 (fixed) |
 | QRC Enriched (Ideal) | 0.0384 | 30s | None | 0 (fixed) |
 | QRC Enriched (Ascella) | 0.0392 | 85s | Ascella QPU | 0 (fixed) |
 | **QRC Enriched (Belenos)** | **0.0392** | **79s** | **Belenos QPU** | **0 (fixed)** |
@@ -325,7 +340,7 @@ on both Ascella and Belenos QPU parameters confirms QPU-deployability.
 - 24 modes, 12 photons maximum
 - Threshold detectors
 - Connected input modes: [0, 2, 4, 6, 8, 9, 12, 13, 16, 18, 20, 22]
-- Performance: HOM 90.2%, Transmittance 5.25%, g2 2.4%
+- Performance: HOM 92.4%, Transmittance 5.29%, g2 2.2%
 
 ### Backends
 
@@ -338,6 +353,8 @@ on both Ascella and Belenos QPU parameters confirms QPU-deployability.
   Before submitting jobs, each QPU's operational status is checked via `RemoteProcessor.status`;
   only QPUs with `status == "running"` are evaluated (maintenance/calibration QPUs are skipped).
   Uses a CPU noise-free builder-based model (required for `export_config()` / MerlinProcessor offloading).
+  As of March 2026: Ascella (`maintenance`), Belenos (`calibration`) — QPU evaluation is automatically
+  skipped until QPUs return to `running` status.
 
 ## Repository Structure
 
@@ -383,6 +400,13 @@ Q-volution_2026_QML_Finance/
 |   |-- test_template.xlsx             #   Test template (Future prediction + Missing data)
 |   |-- train.xlsx                     #   Training data (Excel format)
 |   |-- sample_Simulated_Swaption_Price.xlsx  # Example submission format
+|-- docs/                              # Documentation and presentation materials
+|   |-- TrackB Infographic.html        #   Interactive infographic with Chart.js
+|   |-- grand_finale_slides.html       #   Grand Finale slide deck (HTML)
+|   |-- grand_finale_presentation.md   #   Presentation script and Q&A prep
+|   |-- judging_evaluation_report.md   #   Self-evaluation against judging criteria
+|-- scripts/                           # Utility scripts
+|   |-- insert_extended_cells.py       #   Extended experiment cell insertion
 ```
 
 ## Setup
@@ -520,6 +544,7 @@ comparing predicted vs actual prices.
 13. Loshchilov, I. & Hutter, F. "SGDR: Stochastic Gradient Descent with Warm Restarts." ICLR 2017. [arXiv:1608.03983](https://arxiv.org/abs/1608.03983)
 14. Huber, P.J. "Robust Estimation of a Location Parameter." Annals of Math. Statistics 35(1), 73-101 (1964)
 15. Pascanu, R. et al. "On the Difficulty of Training Recurrent Neural Networks." ICML 2013. [arXiv:1211.5063](https://arxiv.org/abs/1211.5063)
+15b. Kingma, D.P. & Ba, J. "Adam: A Method for Stochastic Optimization." ICLR 2015. [arXiv:1412.6980](https://arxiv.org/abs/1412.6980)
 
 ### Barren Plateaus
 
@@ -531,9 +556,11 @@ comparing predicted vs actual prices.
 18. Yin, Z. et al. "Experimental quantum-enhanced kernel-based ML on a photonic processor." Nature Photonics 19, 1020-1027 (2025). [DOI:10.1038/s41566-025-01682-5](https://doi.org/10.1038/s41566-025-01682-5)
 19. "A Manufacturable Platform for Photonic Quantum Computing." Nature 641, 876-883 (2025). [DOI:10.1038/s41586-025-08820-7](https://doi.org/10.1038/s41586-025-08820-7)
 
-### Photonic Noise Modeling
+### Photonic Noise Modeling & Optimization
 
 20. "Simulating Photonic Devices with Noisy Optical Elements." Physical Review Research 6, 033337 (2024). [arXiv:2311.10613](https://arxiv.org/abs/2311.10613)
+20b. Pappalardo, R. et al. "Photonic parameter-shift rule: exact gradients on linear-optical quantum processors." Physical Review A 111, 032429 (2025). [arXiv:2410.02726](https://arxiv.org/abs/2410.02726)
+20c. Hoch, F. et al. "Variational approach to photonic quantum circuits via the parameter shift rule." Physical Review Research 7, 023227 (2025)
 
 ### Quantum Reservoir Computing
 
@@ -541,11 +568,17 @@ comparing predicted vs actual prices.
 22. Sakurai, A. et al. "Quantum optical reservoir computing powered by boson sampling." Optica Quantum 3, 238-245 (2025). [DOI:10.1364/OPTICAQ.541432](https://doi.org/10.1364/OPTICAQ.541432)
 23. MerLin reproduction: [merlinquantum.ai/reproduced_papers/reproductions/quantum_reservoir_computing](https://merlinquantum.ai/reproduced_papers/reproductions/quantum_reservoir_computing.html)
 24. Rambach, M. et al. "Photonic Quantum-Accelerated Machine Learning." [arXiv:2512.08318](https://arxiv.org/abs/2512.08318) (2025)
+24b. Sannia, A. et al. "Taking advantage of noise in quantum reservoir computing." Scientific Reports 14, 14548 (2024). [DOI:10.1038/s41598-023-35461-5](https://www.nature.com/articles/s41598-023-35461-5)
+24c. Nokkala, J. et al. "Quantum Reservoir Autoencoder: Noise Resilience and Efficient Decoding." [arXiv:2602.19700](https://arxiv.org/abs/2602.19700) (2026)
 
 ### Deep Learning Baselines
 
 25. Hochreiter, S. & Schmidhuber, J. "Long Short-Term Memory." Neural Computation 9(8), 1735-1780 (1997). DOI:10.1162/neco.1997.9.8.1735
 26. Vaswani, A. et al. "Attention Is All You Need." NeurIPS 2017. [arXiv:1706.03762](https://arxiv.org/abs/1706.03762)
+26b. Nie, Y. et al. "A Time Series is Worth 64 Words: Long-term Forecasting with Transformers (PatchTST)." ICLR 2023. [arXiv:2211.14730](https://arxiv.org/abs/2211.14730)
+26c. Zeng, A. et al. "Are Transformers Effective for Time Series Forecasting?" AAAI 2023. [arXiv:2205.13504](https://arxiv.org/abs/2205.13504)
+26d. Lazaridis, G. et al. "Applying Informer for Option Pricing: A Transformer-Based Approach." ICAART 2025. [arXiv:2506.05565](https://arxiv.org/abs/2506.05565)
+26e. Kalousis, A. et al. "Deep Learning for Financial Time Series: A Large-Scale Benchmark." [arXiv:2603.01820](https://arxiv.org/abs/2603.01820) (2026)
 
 ### Quantum Kernel Methods
 
@@ -569,11 +602,16 @@ comparing predicted vs actual prices.
 
 33. Sakuma, T. "Quantum Differential Machine Learning." Quantum Economics and Finance 2(1), 3-12 (2025). [DOI:10.1177/29767032251334589](https://doi.org/10.1177/29767032251334589)
 
+### QPU Remote Computing
+
+34. Perceval Remote Computing Documentation: [perceval.quandela.net/docs/notebooks/Remote_computing](https://perceval.quandela.net/docs/notebooks/Remote_computing.html)
+35. MerLin Remote Execution Guide: [merlinquantum.ai/user_guide/remote_execution](https://merlinquantum.ai/user_guide/remote_execution.html)
+
 ### Competition and Data
 
-34. Q-volution 2026 QML Hackathon: https://aqora.io/competitions/option-pricing-in-finance
-35. Dataset: https://huggingface.co/datasets/Quandela/Challenge_Swaptions
-36. Quandela Training Center: https://training.quandela.com
+36. Q-volution 2026 QML Hackathon: https://aqora.io/competitions/option-pricing-in-finance
+37. Dataset: https://huggingface.co/datasets/Quandela/Challenge_Swaptions
+38. Quandela Training Center: https://training.quandela.com
 
 ## Future Improvements and Open Items
 
@@ -588,7 +626,7 @@ comparing predicted vs actual prices.
 - **Final Candidate selection**: Automated selection of best model (noise vs noise-free) with FINAL CANDIDATE labeling
 
 - **Time-series cross-validation**: 5-fold expanding window CV with `TimeSeriesSplit`; PCA re-fit per fold to prevent data leakage (§11.5)
-- **LSTM & Transformer baselines**: Per-timestep PCA preserving temporal structure; LSTM [25] and Transformer [26] for honest classical comparison (§11.6)
+- **LSTM & Transformer baselines**: Per-timestep PCA preserving temporal structure; LSTM [25] and Transformer [26] for honest classical comparison. Vanilla Transformer correctly demonstrates attention limitations with short windows [26c] (§11.6)
 - **Quantum kernel regression**: FidelityKernel [27, 28] via MerLin's `CircuitBuilder` + `sklearn.KernelRidge` (6m/3p, 150 training samples) (§11.7)
 - **Ensemble QRC**: 5 random reservoirs with prediction averaging for variance reduction [24] (§11.8)
 - **Richer noise model**: Full QPU parameters including `indistinguishability` (0.916) and `g2` (0.021) via Perceval's `NoiseModel` (§11.9)
@@ -599,6 +637,7 @@ comparing predicted vs actual prices.
 ### Remaining Enhancements
 - **QPU end-to-end evaluation**: The QPU evaluation cell builds a CPU noise-free builder-based model and offloads QuantumLayer leaves to QPU via MerlinProcessor. May timeout due to QPU queue latency; test during off-peak hours
 - **Larger circuit scales**: Current experiments go up to 20m/10p in simulation; QPU supports up to 24m/12p (Belenos)
+- **Advanced Transformer variants**: PatchTST [26b] and Informer [26d] are designed for longer sequences (336+ steps); with our window_size=5, they would not benefit from patching or sparse attention. A comprehensive financial DL benchmark [26e] shows LSTM-PatchTST hybrids achieve the best risk-adjusted performance on longer horizons
 
 ## License
 

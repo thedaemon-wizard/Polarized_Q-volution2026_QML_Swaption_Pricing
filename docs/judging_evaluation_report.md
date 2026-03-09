@@ -14,7 +14,7 @@
 - **Test ground truth R² = 0.989**: Strong prediction accuracy on the hidden 6-day test data
 - **26 model configurations tested**: Comprehensive comparison across classical, deep learning, pure quantum, hybrid VQC, quantum kernels, and QRC architectures
 - **Proper auto-regressive forecasting**: Each predicted day feeds back as input, capturing temporal dynamics
-- **Hardware-derived noise models**: Belenos (brightness=0.2311, transmittance=0.5250) and Ascella (brightness=0.1033, transmittance=0.2440) parameters from live QPU metrics
+- **Hardware-derived noise models**: Belenos (brightness=0.2390, transmittance=0.5290) and Ascella (brightness=0.1033, transmittance=0.2440) parameters from live QPU metrics
 - **Complete pipeline**: EDA → preprocessing → training → evaluation → submission files
 - **Self-contained notebook**: 26 code cells, all executed with outputs, runs on Google Colab
 - **Model save/load**: Trained artifacts persisted for reproducibility
@@ -58,6 +58,8 @@ while QRC succeeds makes a compelling narrative about practical quantum approach
 - **Comprehensive ablation study**: Scale comparison (6m to 20m), data re-uploading (1-3 stages), noise comparison (ideal/Ascella/Belenos), QRC vs VQC
 - **Three circuit types explored**: Standard, data re-uploading, QRC reservoir
 - **BatchNorm on quantum output**: Addresses magnitude mismatch between quantum and classical pathways
+- **Optimizer strategy validated**: Adam is correct for QRC (frozen quantum → classical-only gradients); noise-aware optimizers (SPSA, Photonic PSR) are unnecessary, confirmed by Quandela's own QORC paper and MerLin documentation
+- **Transformer baseline justified**: Vanilla Transformer correctly demonstrates attention limitations with short windows (5 steps); modern variants (PatchTST, Informer) are designed for 336+ step sequences
 
 #### Innovation Narrative
 The key innovation story is: "We discovered that barren plateaus make VQC impractical for photonic
@@ -71,6 +73,8 @@ This narrative is well-supported by recent literature:
 - Cerezo et al. (2025, Nature Communications): BP avoidance may imply classical simulability (shows we're aware of the tension)
 - Sakurai et al. (2025): Boson sampling QRC on Quandela's Ascella
 - Li et al. (2025): QRC for realized volatility forecasting
+- Sannia et al. (2024): Noise can *improve* QRC (implicit regularization)
+- Pappalardo et al. (2025): Photonic PSR for VQC (validates our choice to skip it for QRC)
 
 #### Potential Judge Concern
 "Is using a frozen quantum circuit really quantum computing?" - Answer: Yes, it's quantum feature
@@ -87,8 +91,8 @@ who showed 20x data efficiency gains from boson-sampling-enhanced reservoir comp
 #### Strengths
 - **Quick Start for Judges**: 3-line guide at top of README
 - **QPU Transparency note**: Honest about hardware timeouts
-- **Comprehensive README**: 540+ lines covering approach, results, setup, references
-- **26 academic references**: Including 2024-2026 papers on QRC, photonic QML, barren plateaus
+- **Comprehensive README**: 620+ lines covering approach, results, setup, references
+- **45+ academic references**: Including 2024-2026 papers on QRC, photonic QML, barren plateaus, optimizer validation, and Transformer analysis
 - **Infographic**: Professional HTML visualization with Chart.js, showing all key results
 - **Notebook structure**: 16 clearly numbered sections with markdown headers
 - **Results export**: 15+ output files including PNG visualizations and CSV data

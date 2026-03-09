@@ -157,11 +157,14 @@
 > sidesteps optimization entirely - is the right approach for current hardware.
 
 **Q4: "How does the noise affect QRC vs VQC?"**
-> For VQC, noise adds another layer of gradient estimation difficulty.
+> For VQC, noise adds another layer of gradient estimation difficulty — you need
+> noise-aware optimizers like SPSA or Photonic PSR (Pappalardo et al., 2025).
 > For QRC, noise simply changes the feature extraction characteristics.
-> Since we only train the classical readout, it adapts to whatever features
-> the noisy circuit produces. Our noise comparison shows QRC performance
-> is essentially identical across ideal, Ascella, and Belenos noise models.
+> Since we only train the classical readout with Adam, noise affects only the
+> forward pass (features), not the gradient computation. The classical readout
+> adapts to whatever features the noisy circuit provides.
+> This is confirmed by Sannia et al. (2024, Scientific Reports) who showed
+> noise can actually *improve* QRC by acting as implicit regularization.
 > Note: Full noise parameters (indistinguishability, g2) trigger Perceval's
 > density matrix simulation which is CPU-only and computationally prohibitive
 > at 12m/6p. The brightness + transmittance noise model is sufficient for validation.
