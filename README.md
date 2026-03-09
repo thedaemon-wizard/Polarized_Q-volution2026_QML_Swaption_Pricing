@@ -405,8 +405,6 @@ Q-volution_2026_QML_Finance/
 |   |-- grand_finale_slides.html       #   Grand Finale slide deck (HTML)
 |   |-- grand_finale_presentation.md   #   Presentation script and Q&A prep
 |   |-- judging_evaluation_report.md   #   Self-evaluation against judging criteria
-|-- scripts/                           # Utility scripts
-|   |-- insert_extended_cells.py       #   Extended experiment cell insertion
 ```
 
 ## Setup
