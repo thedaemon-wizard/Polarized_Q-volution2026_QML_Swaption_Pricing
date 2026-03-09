@@ -378,8 +378,6 @@ Q-volution_2026_QML_Finance/
 |   |   |-- model_best.pt             #     Best model state dict + metadata
 |   |   |-- scaler.pkl                #     Fitted MinMaxScaler
 |   |   |-- pca_6.pkl                 #     Fitted PCA(6) transform
-|-- scripts/                            # Utility scripts
-|   |-- insert_extended_cells.py       #   Notebook cell insertion helper
 |-- sample_datasets/                   # Sample data files for submission format
 |   |-- test.xlsx                      #   Test data (6 rows, ground truth)
 |   |-- test_template.xlsx             #   Test template (Future prediction + Missing data)
