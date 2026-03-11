@@ -9,6 +9,8 @@ The goal is to build a QML model to predict actual prices of put and call option
 using the provided training dataset, built with Quandela's MerLin framework for photonic
 quantum machine learning.
 
+[Website(Infographic)](https://thedaemon-wizard.github.io/Polarized_Q-volution2026_QML_Swaption_Pricing/TrackB%20Infographic.html)
+
 ---
 
 ### Quick Start for Judges
@@ -405,6 +407,8 @@ Q-volution_2026_QML_Finance/
 |   |-- grand_finale_slides.html       #   Grand Finale slide deck (HTML)
 |   |-- grand_finale_presentation.md   #   Presentation script and Q&A prep
 |   |-- judging_evaluation_report.md   #   Self-evaluation against judging criteria
+|-- scripts/                           # Utility scripts
+|   |-- insert_extended_cells.py       #   Extended experiment cell insertion
 ```
 
 ## Setup
