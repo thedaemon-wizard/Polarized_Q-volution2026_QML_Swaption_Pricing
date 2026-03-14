@@ -106,13 +106,13 @@ We also explore **Quantum Reservoir Computing** where the quantum circuit parame
 Input (PCA features)
     |
     +--> [Frozen] Linear Regression --> Base Prediction
-    |                                        |
+    |                                           |
     +--> ScaleLayer --> [FIXED] Quantum Circuit |
-              |                              |
-         LexGrouping --> BatchNorm           |
-              |                              |
-         MLP Correction --> alpha * corr ----+
-                                             |
+              |                                 |
+         LexGrouping --> BatchNorm              |
+              |                                 |
+         MLP Correction --> alpha * corr ------ +
+                                                |
                                        Final Output
 ```
 
@@ -134,15 +134,15 @@ as modified inputs for multiple recirculation steps:
 Input (PCA features)
     |
     +--> [Frozen] Linear Regression --> Base Prediction
-    |                                        |
-    +--> ScaleLayer --> [FIXED] Quantum Circuit --|
-              |             |                     |
+    |                                              |
+    +--> ScaleLayer --> [FIXED] Quantum Circuit -- |
+              |             |                      |
          Measurement --> Feedback (beta) --> Re-encode
-              |             (repeat N times)      |
-         Concatenate all N feature sets           |
-              |                                   |
+              |             (repeat N times)       |
+         Concatenate all N feature sets            |
+              |                                    |
          BatchNorm --> MLP Head --> alpha * corr --+
-                                                  |
+                                                   |
                                             Final Output
 ```
 
