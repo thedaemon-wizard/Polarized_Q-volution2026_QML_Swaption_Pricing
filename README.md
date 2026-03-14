@@ -22,10 +22,10 @@ quantum machine learning.
 > **Final Candidate**: Residual QRC (Belenos) — Val RMSE 0.0432, **Test RMSE 0.0089 (R² = 0.992)**
 >
 > Residual QRC architecture: classical LR baseline + fixed quantum reservoir correction (0 quantum params trained).
-> **Validated on Belenos QPU Noise Backend** with API-derived noise parameters (brightness=0.23, transmittance=0.52).
+> **Validated on Belenos QPU Noise Backend** with physically motivated 4-parameter noise model (brightness=0.40, indistinguishability=0.92, g2=0.018, transmittance=0.15).
 > Dynamically selected via QPU Noise Preference: best noise-validated model within 2.1% of noise-free candidate.
 > Peak quantum advantage: **+3.77%** achieved by noise-free HPQRC (Test RMSE 0.0085 vs LR 0.0088).
-> Noise-validated advantage: **+1.26%** on validation RMSE (Res. QRC Belenos 0.0432 vs LR 0.0437).
+> Noise-validated advantage: **+1.25%** on validation RMSE (Res. QRC Belenos 0.0432 vs LR 0.0437).
 
 | Metric | Validation | Holdout (6-day AR) | Test (Ground Truth) |
 |--------|-----------|-------------------|-------------------|
@@ -180,8 +180,8 @@ pure VQC (RMSE ~0.19)**, despite training zero quantum parameters. Three factors
    baseline (Linear Regression, R2 0.95), we only ask the quantum component to model the ~5%
    residual variance. This is a fundamentally easier task than predicting prices from scratch.
 
-3. **Noise Resilience in Photonic Circuits**: The Belenos noise model (brightness=0.2327,
-   transmittance=0.5180) actually preserves or slightly improves QRC performance. This is because
+3. **Noise Resilience in Photonic Circuits**: The Belenos noise model (4-parameter: brightness=0.40,
+   indistinguishability=0.92, g2=0.018, transmittance=0.15) actually preserves or slightly improves QRC performance. This is because
    QRC treats the quantum circuit as a fixed feature extractor; photon loss and imperfect
    interference simply create a different (but equally useful) feature space. The classical
    readout adapts to whatever features the noisy circuit provides.
@@ -241,15 +241,17 @@ from classical baseline through noise-validated QPU deployment are fully impleme
 | # | Pipeline Stage | Notebook §/Cells | Status | Key Evidence |
 |---|---------------|-------------------|--------|--------------|
 | 1 | **Data Loading + Classical ML** | §0-§3 (cells 5, 13) | ✅ Implemented | `load_dataset()`, LinearRegression (RMSE 0.0437), MLP (RMSE 0.0489) |
-| 2 | **Dynamic QPU API Parameter Retrieval** | §5 (cells 19-20) | ✅ Implemented | `RemoteProcessor()` for Ascella (12m/4p) & Belenos (24m/12p); `derive_noise_params()` converts HOM%/Transmittance%/g² → brightness/transmittance |
+| 2 | **Dynamic QPU API Parameter Retrieval** | §5 (cells 19-20) | ✅ Implemented | `RemoteProcessor()` for Ascella (12m/4p) & Belenos (24m/12p); `derive_noise_params()` decomposes QPU API metrics into 4 independent noise channels (brightness, indistinguishability, g2, transmittance) |
 | 3 | **Train All Quantum Models (Noise-Free)** | §6-§12 (cells 23-40) | ✅ Implemented | Mode/photon sweep (7 configs), QRC Pure, Residual QRC, Re-uploading (3 stages), Residual Hybrid, HPQRC (3x recirc) — all with API-derived parameters |
 | 4 | **Create Noise Models + Retrain** | §11-§13 (cells 36, 38, 40) | ✅ Implemented | `create_noisy_model()` with Ascella/Belenos/Ideal noise params; `train_qrc_noisy()`, `train_hpqrc_noisy()` for short retraining of best models |
-| 5 | **Test + Classical Comparison + QA** | §15 (cells 50, 52) | ✅ Implemented | 14 models evaluated on test.xlsx ground truth; per-day RMSE breakdown; quantum advantage analysis (+3.77% peak, +1.26% noise-validated Val RMSE) |
+| 5 | **Test + Classical Comparison + QA** | §15 (cells 50, 52) | ✅ Implemented | 14 models evaluated on test.xlsx ground truth; per-day RMSE breakdown; quantum advantage analysis (+3.77% peak, +1.25% noise-validated Val RMSE) |
 
 **Key architectural feature**: Step 3 uses an empirical mode/photon sweep across API-derived
 configurations rather than fixed parameters, providing robust validation of circuit size effectiveness.
-The noise parameters from Step 2 are directly applied in Step 4 via `pcvl.NoiseModel(brightness, transmittance)`
-with threshold detectors, faithfully simulating Ascella and Belenos QPU hardware.
+The noise parameters from Step 2 are directly applied in Step 4 via Perceval's `pcvl.NoiseModel`
+with 4 independent noise channels (brightness, indistinguishability, g2, transmittance) and
+threshold detectors (Heurtel et al., Quantum 7, 931, 2023 [2]), faithfully simulating Ascella and
+Belenos QPU hardware.
 
 ## Results
 
@@ -340,13 +342,13 @@ on the test data (6-day auto-regressive prediction):
 | Metric | Value | Models Compared | Data |
 |--------|-------|----------------|------|
 | **Peak Quantum Advantage** | **+3.77%** | HPQRC 0.0085 vs LR 0.0088 | Test RMSE (6 samples) |
-| **Noise-Validated Advantage** | **+1.26%** | Res. QRC Belenos 0.0432 vs LR 0.0437 | Val RMSE (~98 samples) |
+| **Noise-Validated Advantage** | **+1.25%** | Res. QRC Belenos 0.0432 vs LR 0.0437 | Val RMSE (~98 samples) |
 | **QPU-Realistic Test Perf.** | **within 0.97%** | Final Candidate 0.0089 vs LR 0.0088 | Test RMSE (6 samples) |
 
 - **Peak QA (+3.77%)** is achieved by **noise-free HPQRC** (Feedback QRC, 3x recirculation),
   not the Final Candidate. This model is not noise-validated and degrades severely under
   QPU noise (Val RMSE ~0.65).
-- **Noise-Validated QA (+1.26%)** is achieved by the **Final Candidate** (Residual QRC Belenos)
+- **Noise-Validated QA (+1.25%)** is achieved by the **Final Candidate** (Residual QRC Belenos)
   on validation data, where larger sample size makes the comparison more meaningful.
 - **QPU-Realistic Test Performance**: The Final Candidate is within 0.97% of Classical LR on
   test RMSE (0.008934 vs 0.008848). With only 6 test samples, this difference is statistically
@@ -354,7 +356,7 @@ on the test data (6-day auto-regressive prediction):
 
 **Key Findings**:
 - **Peak quantum advantage: +3.77%** (noise-free HPQRC): Test RMSE 0.0085 vs Classical LR 0.0088
-- **Noise-validated advantage: +1.26%** (Final Candidate): Val RMSE 0.0432 vs Classical LR 0.0437
+- **Noise-validated advantage: +1.25%** (Final Candidate): Val RMSE 0.0432 vs Classical LR 0.0437
 - **All 14 models evaluated on test data**: QA verification passes for all models (14/14),
   including 3 noisy HPQRC + 3 noisy Residual Hybrid variants
 - **Residual Hybrid outperforms LR by 2.88%** on validation: 0.0425 vs 0.0437
@@ -374,7 +376,7 @@ on the test data (6-day auto-regressive prediction):
 on financial data [39]. Our results demonstrate a measurable advantage: noise-free HPQRC (0.0085)
 outperforms Classical LR (0.0088) by +3.77% on test data, though the 6-sample test set limits
 statistical significance. The noise-validated Final Candidate (Residual QRC Belenos) achieves
-+1.26% advantage on validation RMSE (0.0432 vs 0.0437) and Test RMSE 0.0089 (R²=0.992),
++1.25% advantage on validation RMSE (0.0432 vs 0.0437) and Test RMSE 0.0089 (R²=0.992),
 within 0.97% of classical on test.
 QRC remains promising due to: noise resilience [47], no quantum parameter training (avoids barren
 plateaus [29, 30]), and theoretical scaling (12m/4p → 495-dim; 24m/12p → 1.35M-dim features).
@@ -406,15 +408,25 @@ Noise models run on CPU (MerLin's `PhotonLossTransform` device constraint).
 Timing is included in all print outputs and exported to `model_comparison.csv` (Time_s column)
 and `noise_comparison.csv` (Time_s column).
 
-### Noise Model Comparison (QPU-Derived Parameters)
+### Noise Model Comparison (Physically Motivated 4-Parameter Decomposition)
 
-| QPU/Config | Brightness | Transmittance | RMSE | Time |
-|------------|-----------|--------------|------|------|
-| Ascella | 0.1033 | 0.2440 | 0.1884 | 77s |
-| Belenos | 0.2327 | 0.5180 | 0.1847 | 85s |
-| Ideal | 1.0000 | 1.0000 | 0.1921 | 43s |
+We use Perceval's `NoiseModel` (Heurtel et al., Quantum 7, 931, 2023 [2]) with 4 independent
+noise channels derived from live QPU API metrics:
 
-Noise parameters derived from live QPU hardware metrics (HOM, Transmittance, g2).
+- **brightness** = 0.40 (Quandela Prometheus quantum-dot source first-lens brightness, literature value)
+- **indistinguishability** = HOM / 100 (direct from QPU API)
+- **g2** = g2 / 100 (direct from QPU API)
+- **transmittance** = API end-to-end T / (source\_brightness x detector\_eff) = T\_e2e / 0.34
+
+| QPU/Config | Brightness | Indistinguishability | g2 | Transmittance | RMSE | Time |
+|------------|-----------|---------------------|------|--------------|------|------|
+| Ascella | 0.40 | 0.8636 | 0.0195 | 0.0718 | 0.1854 | 77s |
+| Belenos | 0.40 | 0.9190 | 0.0180 | 0.1482 | 0.1868 | 85s |
+| Ideal | 1.00 | 1.0000 | 0.0000 | 1.0000 | 0.1874 | 43s |
+
+This physically motivated decomposition separates source quality (brightness, indistinguishability, g2)
+from optical-path loss (transmittance), enabling more faithful QPU noise simulation than
+heuristic 2-parameter models.
 
 ### Quantum Reservoir Computing (QRC) Results
 
@@ -461,8 +473,8 @@ evaluates 7 configurations (6m/3p to 12m/6p); best config 12m/4p selected.
 
 - **CPU Simulator (SLOS)**: Perceval local simulation for development
 - **GPU Accelerated**: CUDA-accelerated local simulation for faster training
-- **Noise Model Simulator**: QPU-realistic noise with hardware-derived parameters
-  (brightness, transmittance, threshold detectors) for both Ascella and Belenos
+- **Noise Model Simulator**: QPU-realistic noise with physically motivated 4-parameter model
+  (brightness, indistinguishability, g2, transmittance) and threshold detectors for both Ascella and Belenos
 - **QPU Hardware**: Quandela Cloud via MerlinProcessor (Ascella, Belenos).
   QPU evaluation is automatically enabled when `QUANDELA_TOKEN` is set in `.env`.
   Before submitting jobs, each QPU's operational status is checked via `RemoteProcessor.status`;

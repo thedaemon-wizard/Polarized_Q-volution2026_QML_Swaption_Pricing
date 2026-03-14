@@ -85,7 +85,7 @@
                 <span class="text-white font-semibold">Residual QRC (Belenos) — Val RMSE 0.0432, Test RMSE 0.0089, R²=0.992</span>
             </div>
             <div class="flex flex-wrap justify-center gap-4 mt-2 text-xs">
-                <span class="bg-emerald-500/15 border border-emerald-500/30 rounded-full px-4 py-1 text-emerald-400">+1.26% Val RMSE over LR (noise-validated, Belenos QPU)</span>
+                <span class="bg-emerald-500/15 border border-emerald-500/30 rounded-full px-4 py-1 text-emerald-400">+1.25% Val RMSE over LR (noise-validated, Belenos QPU)</span>
                 <span class="bg-violet-500/15 border border-violet-500/30 rounded-full px-4 py-1 text-violet-400">Best Quantum Advantage: +3.77% (HPQRC 3x recirc)</span>
             </div>
         </div>
@@ -109,7 +109,7 @@
             <div class="text-xs text-slate-500 mt-1">HPQRC 0.0085 vs LR 0.0088</div>
         </div>
         <div class="glass-card rounded-2xl p-5 text-center" style="box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);">
-            <div class="text-3xl md:text-4xl font-black text-emerald-400 mb-1">+1.26%</div>
+            <div class="text-3xl md:text-4xl font-black text-emerald-400 mb-1">+1.25%</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">Noise-Validated</div>
             <div class="text-xs text-slate-500 mt-1">Belenos QPU: 0.0432 vs LR 0.0437</div>
         </div>
@@ -266,7 +266,7 @@
                     <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-600">
                         <div class="flex justify-between items-center">
                             <span class="text-slate-400 text-sm">Improvement over LR</span>
-                            <span class="text-2xl font-black text-slate-300">+1.26%</span>
+                            <span class="text-2xl font-black text-slate-300">+1.25%</span>
                         </div>
                         <div class="text-xs text-slate-500 mt-1">Res. QRC (Belenos) Val 0.0432 vs LR 0.0437</div>
                     </div>
@@ -280,23 +280,23 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <section class="glass-card rounded-2xl p-6 md:p-10">
             <h2 class="text-2xl font-bold mb-4 text-violet-400">QPU Hardware &amp; Noise Models</h2>
-            <p class="text-slate-400 mb-4 text-sm">Real hardware noise parameters derived from live QPU metrics ensure realistic simulation fidelity.</p>
+            <p class="text-slate-400 mb-4 text-sm">Physically motivated 4-parameter noise decomposition (brightness, indistinguishability, g&sup2;, transmittance) derived from live QPU metrics ensures realistic simulation fidelity.</p>
             <div class="space-y-3 mb-6">
                 <div class="bg-slate-800/50 rounded-lg p-4 border border-violet-500/20">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-violet-400 font-bold">Ascella</span>
                         <span class="text-xs text-slate-500">12m / 4p</span>
                     </div>
-                    <div class="text-xs text-slate-400">Brightness 0.1033 &bull; Transmittance 0.2440</div>
-                    <div class="text-xs text-slate-500 mt-1">Status: maintenance</div>
+                    <div class="text-xs text-slate-400">Brightness 0.40 &bull; Indist. 0.8636 &bull; g&sup2; 0.0195 &bull; Trans. 0.0718</div>
+                    <div class="text-xs text-slate-500 mt-1">4 physically motivated noise channels &bull; Status: maintenance</div>
                 </div>
                 <div class="bg-slate-800/50 rounded-lg p-4 border border-pink-500/20">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-pink-400 font-bold">Belenos</span>
                         <span class="text-xs text-slate-500">24m / 12p</span>
                     </div>
-                    <div class="text-xs text-slate-400">Brightness 0.2327 &bull; Transmittance 0.5180</div>
-                    <div class="text-xs text-slate-500 mt-1">Status: calibration (noise model used)</div>
+                    <div class="text-xs text-slate-400">Brightness 0.40 &bull; Indist. 0.9190 &bull; g&sup2; 0.0180 &bull; Trans. 0.1482</div>
+                    <div class="text-xs text-slate-500 mt-1">4 physically motivated noise channels &bull; Status: calibration (noise model used)</div>
                 </div>
             </div>
             <p class="text-xs text-slate-500 border-t border-slate-700 pt-3">

@@ -20,7 +20,7 @@
 > Our solution achieved an **R-squared of 0.992** on the hidden test data,
 > using a noise-validated Residual QRC (Belenos) architecture. Our project's
 > peak quantum advantage is +3.77% (from HPQRC, noise-free), while the
-> noise-validated Final Candidate shows +1.26% advantage over Classical LR
+> noise-validated Final Candidate shows +1.25% advantage over Classical LR
 > on validation RMSE — confirming QPU deployment viability."
 
 **KEY VISUAL:** Title + 4 metric cards (Test RMSE 0.0089, R² 0.992, +3.77% peak quantum advantage (HPQRC), 14/14 QA pass)
@@ -129,7 +129,7 @@
 > excellent swaption price prediction - R-squared 0.992 on hidden test data.
 > Our peak quantum advantage is +3.77% from HPQRC (noise-free, Test RMSE 0.0085
 > vs LR 0.0088). The noise-validated Final Candidate (Res. QRC Belenos) shows
-> +1.26% advantage over Classical LR on validation RMSE, and is competitive
+> +1.25% advantage over Classical LR on validation RMSE, and is competitive
 > within 1% on test data — confirming QPU deployment viability.
 > All 14/14 models pass QA (including noisy HPQRC and noisy Residual Hybrid variants
 > on Ascella and Belenos), with QPU-derived circuit configs.
@@ -151,12 +151,14 @@
 > The HPQRC (3x recirculation) achieves Test RMSE 0.0085 vs LR 0.0088, a +3.77%
 > quantum advantage on test data. All 14/14 models pass QA (includes noisy HPQRC and
 > noisy Residual Hybrid variants on Ascella/Belenos; noisy variants show Val RMSE ~0.65).
+> Noise validation uses a physically motivated 4-parameter Perceval NoiseModel
+> (brightness, indistinguishability, g2, transmittance) with QPU-derived values.
 
 **Q2: "Is this really quantum advantage?"**
 > Yes! The project's peak quantum advantage is +3.77%, achieved by HPQRC (3x recirculation,
 > noise-free): Test RMSE 0.0085 vs Classical LR 0.0088. This is a noise-free result.
 > Our noise-validated Final Candidate, Residual QRC (Belenos), achieves Test RMSE 0.0089
-> (R²=0.992) and shows +1.26% advantage over Classical LR on validation RMSE, competitive
+> (R²=0.992) and shows +1.25% advantage over Classical LR on validation RMSE, competitive
 > within ~1% on test data. This confirms QPU deployment viability.
 > All 14/14 quantum and classical models pass QA (including noisy HPQRC: Ascella Val 0.6528,
 > Belenos 0.6525, Ideal 0.6523; and noisy Residual Hybrid: Ascella Val 0.6522, Belenos Val 0.6518).
@@ -189,16 +191,21 @@
 > adapts to whatever features the noisy circuit provides.
 > This is confirmed by Sannia et al. (2024, Scientific Reports) who showed
 > noise can actually *improve* QRC by acting as implicit regularization.
-> Note: Full noise parameters (indistinguishability, g2) trigger Perceval's
-> density matrix simulation which is CPU-only and computationally prohibitive
-> at 12m/6p. The brightness + transmittance noise model is sufficient for validation.
+> Our noise model uses the full Perceval NoiseModel with 4 QPU-derived channels
+> (brightness, indistinguishability, g2, transmittance) following Heurtel et al.
+> (Quantum 7, 931, 2023). Brightness is set at 0.40 from Quandela Prometheus QD
+> literature; indistinguishability and g2 are mapped directly from QPU API HOM%
+> and g2%; transmittance is factored from end-to-end efficiency by removing source
+> and detector contributions. This physically motivated parameterization provides
+> a realistic noise profile for each QPU backend.
 
 **Q5: "What about the QPU timeout issue?"**
 > We transparently note this in both our README and notebook. Both QPUs
 > were in maintenance/calibration during our evaluation window. Our code
 > automatically checks QPU status and will run on hardware when available.
-> The noise model we use has hardware-derived parameters, so results are
-> physically realistic.
+> The noise model we use is a physically motivated 4-parameter Perceval NoiseModel
+> (brightness=0.40, indistinguishability, g2, transmittance) with QPU-derived values
+> following Heurtel et al. (Quantum 7, 931, 2023), so results are physically realistic.
 
 **Q6: "How does auto-regressive error accumulate?"**
 > Each predicted day feeds back as input for the next prediction. Day 1
@@ -231,7 +238,7 @@
 1. **Time management**: 3-5 min total. Practice with a timer.
 2. **Audience**: Broad - judges from quantum physics, finance, and ML backgrounds.
 3. **Avoid jargon**: Explain "barren plateaus" simply as "flat optimization landscape."
-4. **Show confidence**: The R² = 0.992 result is genuinely strong. Peak quantum advantage is +3.77% (HPQRC, noise-free); noise-validated Final Candidate shows +1.26% on validation RMSE. Val RMSE (Belenos QPU) is 0.0432; Holdout RMSE is 0.0044 (R²=0.998).
+4. **Show confidence**: The R² = 0.992 result is genuinely strong. Peak quantum advantage is +3.77% (HPQRC, noise-free); noise-validated Final Candidate shows +1.25% on validation RMSE. Val RMSE (Belenos QPU) is 0.0432; Holdout RMSE is 0.0044 (R²=0.998).
 5. **Be honest**: About QPU timeouts while highlighting positive quantum advantage on test data.
 6. **Energy**: This is a celebration - be enthusiastic about what you built.
 
@@ -247,7 +254,7 @@
 | Holdout RMSE | 0.0044 (R²=0.998) |
 | Holdout MAE | 0.0035 |
 | Peak quantum advantage (test, HPQRC noise-free) | +3.77% (HPQRC 0.0085 vs LR 0.0088) |
-| Noise-validated quantum advantage (Final Candidate) | +1.26% on validation RMSE; within ~1% on test |
+| Noise-validated quantum advantage (Final Candidate) | +1.25% on validation RMSE; within ~1% on test |
 | HPQRC (3x recirc) | Val RMSE 0.0432, Test RMSE 0.0085 |
 | Best sweep | 12m/4p (Val RMSE 0.0431), all 7 configs succeed |
 | Improvement over LR (Residual Hybrid, validation) | +2.88% |
@@ -262,4 +269,7 @@
 | Noisy HPQRC (Ascella/Belenos/Ideal) | Val 0.6528/0.6525/0.6523, Test 0.0090/0.0091/0.0091 |
 | Noisy Residual Hybrid (Ascella/Belenos) | Val 0.6522/0.6518 (severe noise degradation) |
 | QA pass rate | 14/14 models on test data (includes noisy HPQRC + noisy Res. Hybrid) |
+| Noise model | 4-param Perceval NoiseModel (brightness=0.40, indist, g2, trans); Heurtel et al. (2023) |
+| Ascella noise params | brightness=0.40, indist=0.8636, g2=0.0195, trans=0.0718 |
+| Belenos noise params | brightness=0.40, indist=0.9190, g2=0.0180, trans=0.1482 |
 | Noise analysis | §11 noise degradation analysis; noise-validated (Belenos QPU) selected as Final Candidate |
