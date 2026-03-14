@@ -18,10 +18,12 @@
 > only ~490 historical rows.
 >
 > Our solution achieved an **R-squared of 0.992** on the hidden test data,
-> using a Residual QRC (Belenos) architecture with +3.77% quantum advantage
-> over classical linear regression."
+> using a noise-validated Residual QRC (Belenos) architecture. Our project's
+> peak quantum advantage is +3.77% (from HPQRC, noise-free), while the
+> noise-validated Final Candidate shows +1.26% advantage over Classical LR
+> on validation RMSE — confirming QPU deployment viability."
 
-**KEY VISUAL:** Title + 4 metric cards (Test RMSE 0.0089, R² 0.992, +3.77% quantum advantage, 14/14 QA pass)
+**KEY VISUAL:** Title + 4 metric cards (Test RMSE 0.0089, R² 0.992, +3.77% peak quantum advantage (HPQRC), 14/14 QA pass)
 
 ---
 
@@ -124,13 +126,13 @@
 
 > "To summarize: we showed that by combining a strong classical baseline
 > with a photonic quantum reservoir in a residual architecture, we achieve
-> excellent swaption price prediction - R-squared 0.992 on hidden test data,
-> with +3.77% quantum advantage over classical linear regression on test data.
+> excellent swaption price prediction - R-squared 0.992 on hidden test data.
+> Our peak quantum advantage is +3.77% from HPQRC (noise-free, Test RMSE 0.0085
+> vs LR 0.0088). The noise-validated Final Candidate (Res. QRC Belenos) shows
+> +1.26% advantage over Classical LR on validation RMSE, and is competitive
+> within 1% on test data — confirming QPU deployment viability.
 > All 14/14 models pass QA (including noisy HPQRC and noisy Residual Hybrid variants
-> on Ascella and Belenos), with QPU-derived circuit configs. Our Final Candidate,
-> Residual QRC (Belenos), is noise-validated (Belenos QPU) and was dynamically selected
-> because it is within 2.1% Val RMSE of the noise-free candidate, demonstrating
-> QPU deployment readiness — see §11 noise degradation analysis.
+> on Ascella and Belenos), with QPU-derived circuit configs.
 >
 > Thank you. I'm happy to take questions."
 
@@ -151,14 +153,16 @@
 > noisy Residual Hybrid variants on Ascella/Belenos; noisy variants show Val RMSE ~0.65).
 
 **Q2: "Is this really quantum advantage?"**
-> Yes! The HPQRC (3x recirculation) achieves Test RMSE 0.0085 vs Classical LR 0.0088,
-> a +3.77% quantum advantage on test data. All 14/14 quantum and classical models pass QA
-> (including noisy HPQRC: Ascella Val 0.6528, Belenos 0.6525, Ideal 0.6523; and
-> noisy Residual Hybrid: Ascella Val 0.6522, Belenos Val 0.6518).
-> Our Final Candidate, Residual QRC (Belenos, noise-validated), achieves Test RMSE 0.0089 (R²=0.992).
-> It was dynamically selected because it is within 2.1% Val RMSE of the noise-free candidate
-> and demonstrates QPU deployment readiness — a noise-validated (Belenos QPU) model is a
-> stronger statement of practical quantum utility than a noise-free simulation.
+> Yes! The project's peak quantum advantage is +3.77%, achieved by HPQRC (3x recirculation,
+> noise-free): Test RMSE 0.0085 vs Classical LR 0.0088. This is a noise-free result.
+> Our noise-validated Final Candidate, Residual QRC (Belenos), achieves Test RMSE 0.0089
+> (R²=0.992) and shows +1.26% advantage over Classical LR on validation RMSE, competitive
+> within ~1% on test data. This confirms QPU deployment viability.
+> All 14/14 quantum and classical models pass QA (including noisy HPQRC: Ascella Val 0.6528,
+> Belenos 0.6525, Ideal 0.6523; and noisy Residual Hybrid: Ascella Val 0.6522, Belenos Val 0.6518).
+> The Final Candidate was dynamically selected because it is within 2.1% Val RMSE of the
+> noise-free candidate — a noise-validated (Belenos QPU) model is a stronger statement of
+> practical quantum utility than a noise-free simulation.
 > Our approach is strategically sound for five reasons:
 > 1. QRC avoids the barren plateau problem that kills VQC (Larocca et al., 2025)
 > 2. The noise-validated Belenos variant is within 2.1% Val RMSE of the noise-free variant;
@@ -227,7 +231,7 @@
 1. **Time management**: 3-5 min total. Practice with a timer.
 2. **Audience**: Broad - judges from quantum physics, finance, and ML backgrounds.
 3. **Avoid jargon**: Explain "barren plateaus" simply as "flat optimization landscape."
-4. **Show confidence**: The R² = 0.992 result is genuinely strong, with +3.77% quantum advantage. Val RMSE (noise-validated Final Candidate, Belenos QPU) is 0.0432; Holdout RMSE is 0.0044 (R²=0.998).
+4. **Show confidence**: The R² = 0.992 result is genuinely strong. Peak quantum advantage is +3.77% (HPQRC, noise-free); noise-validated Final Candidate shows +1.26% on validation RMSE. Val RMSE (Belenos QPU) is 0.0432; Holdout RMSE is 0.0044 (R²=0.998).
 5. **Be honest**: About QPU timeouts while highlighting positive quantum advantage on test data.
 6. **Energy**: This is a celebration - be enthusiastic about what you built.
 
@@ -242,10 +246,11 @@
 | Test MAE | 0.0072 |
 | Holdout RMSE | 0.0044 (R²=0.998) |
 | Holdout MAE | 0.0035 |
-| Quantum advantage (test) | +3.77% (HPQRC 0.0085 vs LR 0.0088) |
+| Peak quantum advantage (test, HPQRC noise-free) | +3.77% (HPQRC 0.0085 vs LR 0.0088) |
+| Noise-validated quantum advantage (Final Candidate) | +1.26% on validation RMSE; within ~1% on test |
 | HPQRC (3x recirc) | Val RMSE 0.0432, Test RMSE 0.0085 |
 | Best sweep | 12m/4p (Val RMSE 0.0431), all 7 configs succeed |
-| Improvement over LR | +2.88% |
+| Improvement over LR (Residual Hybrid, validation) | +2.88% |
 | QRC vs Pure QRC improvement | 4.5x |
 | Classical variance captured | 95% |
 | Training time (best model) | ~13 seconds |

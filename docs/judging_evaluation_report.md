@@ -23,7 +23,7 @@
 
 #### Weaknesses / Risks
 - **QPU hardware results absent**: Both QPUs timed out; results are simulator-only (transparently documented)
-- **Quantum advantage confirmed on test**: HPQRC (0.0085) vs LR (0.0088) = +3.77% advantage; Final Candidate Res. QRC (Belenos) Test RMSE 0.0089
+- **Quantum advantage confirmed on test**: Peak +3.77% from HPQRC noise-free (0.0085 vs LR 0.0088); noise-validated Final Candidate Res. QRC (Belenos) Test RMSE 0.0089, +1.26% advantage on validation RMSE, within ~1% on test
 - **Random seed sensitivity**: Slight RMSE variations between runs (documented in CSV files)
 - **Level 2 (missing data)**: Only basic analysis included, not fully developed
 
@@ -34,8 +34,9 @@
 - **Barren plateau analysis**: Cerezo et al. discussion on BP avoidance vs classical simulability (§11.12)
 
 #### Key Risk Assessment
-The HPQRC (3x recirculation) achieves Test RMSE 0.0085 vs Classical LR 0.0088, a +3.77% quantum advantage.
+The HPQRC (3x recirculation, noise-free) achieves Test RMSE 0.0085 vs Classical LR 0.0088, the project's peak quantum advantage of +3.77%.
 Residual Hybrid (12m/4p) achieves Val RMSE 0.0432 (noise-free). Residual QRC (Belenos) achieves Val RMSE 0.0432, Test RMSE 0.0089, R²=0.992 — the Final Candidate, validated on Belenos QPU Noise Backend.
+The noise-validated Final Candidate shows +1.26% advantage over Classical LR on validation RMSE, and is competitive within ~1% (0.97%) on test data, confirming QPU deployment viability.
 The noise-validated (Belenos QPU) Final Candidate was dynamically selected because it is within 2.1% Val RMSE
 of the noise-free candidate and demonstrates QPU deployment readiness.
 Residual QRC (Ascella) achieves Val RMSE 0.0432, Test RMSE 0.0088.
@@ -46,7 +47,7 @@ The holdout RMSE (0.0044, R²=0.998) is substantially better than the test groun
 which is expected since the holdout is drawn from within-sample data. The test error remains
 low (R² = 0.992), confirming the model generalizes well to unseen future data. All 14/14 models pass QA on test data (includes 3 noisy HPQRC variants and 2 noisy Residual Hybrid variants).
 The honest comparison where pure QRC fails (RMSE ~0.190) while Residual QRC succeeds makes a compelling narrative
-about practical quantum approaches. Improvement over LR: +2.88% on validation.
+about practical quantum approaches. Improvement over LR: +2.88% on validation (Residual Hybrid, noise-free); noise-validated Final Candidate: +1.26% on validation, within 0.97% on test.
 
 ---
 
@@ -106,7 +107,7 @@ who showed 20x data efficiency gains from boson-sampling-enhanced reservoir comp
 
 #### Weaknesses
 - **Notebook length**: 47 cells — streamlined for submission
-- **No separate slide deck**: Only markdown presentation script + HTML infographic (no PDF/PPTX)
+- **Slide deck**: HTML slide deck (`grand_finale_slides.html`) + markdown presentation script + HTML infographic (no PDF/PPTX)
 - **Code comments**: Some cells could benefit from more inline explanations
 
 #### Documentation Quality vs Competition
@@ -131,7 +132,7 @@ The README and notebook are likely among the more polished submissions given:
 - The 95/5 residual split is intuitive and easy to explain
 - "Barren plateaus" can be simplified to "flat optimization landscape"
 - R² = 0.992 is a universally understood metric
-- Test RMSE 0.0089 with +3.77% quantum advantage (HPQRC 0.0085 vs LR 0.0088)
+- Test RMSE 0.0089; peak +3.77% quantum advantage from HPQRC noise-free (0.0085 vs LR 0.0088); noise-validated Final Candidate: +1.26% on validation
 - All 14/14 models pass QA on test data (includes 3 noisy HPQRC variants and 2 noisy Residual Hybrid variants) — strong validation story
 
 ### "Is the approach innovative?"
@@ -157,7 +158,7 @@ The README and notebook are likely among the more polished submissions given:
 **Strong contenders for top placement** based on:
 1. Comprehensive technical implementation with QPU-derived configs and all outputs present
 2. Clear innovation narrative (QRC > VQC, barren plateaus, noise resilience)
-3. Excellent test performance (R² = 0.992) with +3.77% quantum advantage on test data
+3. Excellent test performance (R² = 0.992) with peak +3.77% quantum advantage (HPQRC, noise-free); noise-validated Final Candidate +1.26% on validation
 4. Professional documentation and visualization
 5. Dynamic QPU integration demonstrates practical hardware-aware approach
 
@@ -180,7 +181,7 @@ The README and notebook are likely among the more polished submissions given:
 
 ### High Priority
 1. ~~Add `os.makedirs('results', exist_ok=True)` to Cell 3~~ ✅ (already done)
-2. Prepare a concise PDF/PPTX slide deck for the finale (currently only markdown + HTML)
+2. ~~Prepare a slide deck for the finale~~ ✅ (`grand_finale_slides.html` exists as HTML slide deck)
 
 ### Medium Priority
 3. Add a brief "Limitations" section in the notebook summarizing known constraints

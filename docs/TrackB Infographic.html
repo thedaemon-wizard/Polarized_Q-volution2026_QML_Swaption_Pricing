@@ -80,15 +80,19 @@
             <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-6">
                 Photonic Quantum Reservoir Computing for Financial Derivatives
             </p>
-            <div class="inline-block bg-gradient-to-r from-amber-500/20 to-red-500/20 border border-amber-500/40 rounded-full px-6 py-2">
+            <div class="inline-block bg-gradient-to-r from-amber-500/20 to-red-500/20 border border-amber-500/40 rounded-full px-6 py-2 mb-2">
                 <span class="text-amber-400 font-bold">Final Candidate:</span>
                 <span class="text-white font-semibold">Residual QRC (Belenos) — Val RMSE 0.0432, Test RMSE 0.0089, R²=0.992</span>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 mt-2 text-xs">
+                <span class="bg-emerald-500/15 border border-emerald-500/30 rounded-full px-4 py-1 text-emerald-400">+1.26% Val RMSE over LR (noise-validated, Belenos QPU)</span>
+                <span class="bg-violet-500/15 border border-violet-500/30 rounded-full px-4 py-1 text-violet-400">Best Quantum Advantage: +3.77% (HPQRC 3x recirc)</span>
             </div>
         </div>
     </header>
 
     <!-- ========== KEY METRICS ========== -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div class="glass-card rounded-2xl p-5 text-center glow-cyan">
             <div class="text-3xl md:text-4xl font-black text-cyan-400 mb-1">0.0089</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">Test RMSE</div>
@@ -103,6 +107,11 @@
             <div class="text-3xl md:text-4xl font-black text-amber-400 mb-1">+3.77%</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">Quantum Advantage</div>
             <div class="text-xs text-slate-500 mt-1">HPQRC 0.0085 vs LR 0.0088</div>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-center" style="box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);">
+            <div class="text-3xl md:text-4xl font-black text-emerald-400 mb-1">+1.26%</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider">Noise-Validated</div>
+            <div class="text-xs text-slate-500 mt-1">Belenos QPU: 0.0432 vs LR 0.0437</div>
         </div>
         <div class="glass-card rounded-2xl p-5 text-center">
             <div class="text-3xl md:text-4xl font-black text-violet-400 mb-1">14/14</div>
@@ -257,9 +266,9 @@
                     <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-600">
                         <div class="flex justify-between items-center">
                             <span class="text-slate-400 text-sm">Improvement over LR</span>
-                            <span class="text-2xl font-black text-slate-300">+2.88%</span>
+                            <span class="text-2xl font-black text-slate-300">+1.26%</span>
                         </div>
-                        <div class="text-xs text-slate-500 mt-1">Res. QRC (Belenos) 0.0432 vs LR 0.0437</div>
+                        <div class="text-xs text-slate-500 mt-1">Res. QRC (Belenos) Val 0.0432 vs LR 0.0437</div>
                     </div>
                 </div>
                 <p class="text-xs text-slate-500 mt-4">Tested: Classical (LR, MLP), QRC Pure, Residual QRC (Ideal/Ascella/Belenos), HPQRC (3x recirc), Residual Hybrid, Noisy HPQRC (Ascella/Belenos/Ideal), Noisy Res. Hybrid (Ascella/Belenos). All 14/14 pass QA. Noisy HPQRC insight: feedback QRC amplifies photonic noise through recirculation.</p>
