@@ -379,6 +379,14 @@
                             <td class="text-right text-slate-400">0.0489</td>
                         </tr>
                         <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-slate-300">GRU (h=10, 9.5k)</td>
+                            <td class="text-right text-slate-400">0.0460</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
+                            <td class="py-1.5 text-slate-300">LSTM (h=8, 9.5k)</td>
+                            <td class="text-right text-slate-400">0.0476</td>
+                        </tr>
+                        <tr class="border-t border-slate-700">
                             <td class="py-1.5 text-red-400">QRC Pure (Ideal)</td>
                             <td class="text-right text-red-400">0.1904</td>
                         </tr>
@@ -429,7 +437,7 @@
             <div class="glass p-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">QPU Transparency</h3>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    Final candidate: Residual QRC (Belenos). All 14/14 models pass QA on test data (includes 3 noisy HPQRC variants + 2 noisy Residual Hybrid variants).
+                    Final candidate: Residual QRC (Belenos). All 16/16 models pass QA on test data (includes LSTM, GRU, 3 noisy HPQRC + 2 noisy Residual Hybrid variants).
                     Validated on Belenos QPU Noise Backend.
                     Noisy HPQRC insight: feedback QRC amplifies photonic noise through recirculation.
                 </p>

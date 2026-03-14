@@ -23,7 +23,7 @@
 > noise-validated Final Candidate shows +1.25% advantage over Classical LR
 > on validation RMSE — confirming QPU deployment viability."
 
-**KEY VISUAL:** Title + 4 metric cards (Test RMSE 0.0089, R² 0.992, +3.77% peak quantum advantage (HPQRC), 14/14 QA pass)
+**KEY VISUAL:** Title + 4 metric cards (Test RMSE 0.0089, R² 0.992, +15.74% peak quantum advantage (HPQRC), 16/16 QA pass)
 
 ---
 
@@ -76,17 +76,18 @@
 
 **SPEAK:**
 
-> "We tested multiple model configurations across classical baselines,
-> pure quantum, hybrid VQC, and QRC architectures — all 14/14 models pass QA on test data,
-> now including noisy HPQRC and noisy Residual Hybrid variants (Ascella, Belenos).
+> "We tested 16 model configurations across classical baselines (LR, MLP, LSTM, GRU),
+> pure quantum, hybrid VQC, and QRC architectures — all 16/16 models pass QA on test data,
+> including parameter-matched LSTM and GRU benchmarks, noisy HPQRC and noisy Residual Hybrid variants.
 >
 > Our Final Candidate - Residual QRC (Belenos), validated on Belenos QPU Noise Backend -
-> validated on the hidden test data with RMSE 0.0089 and R-squared 0.992.
+> validated on the hidden test data with RMSE 0.0088 and R-squared 0.992.
 >
-> The HPQRC with 3x recirculation achieves Test RMSE 0.0085 vs Classical LR 0.0088,
-> a +3.77% quantum advantage. The best sweep configuration is 12m/4p (Val RMSE 0.0431),
-> with all 7 configs succeeding. The noise-validated Final Candidate was dynamically selected
-> because it is within 2.1% Val RMSE of the noise-free candidate and demonstrates QPU
+> The HPQRC with 5x recirculation achieves Test RMSE 0.0075 vs Classical LR 0.0088,
+> a +15.74% quantum advantage. We include parameter-matched LSTM (9.5k params, Test 0.0088)
+> and GRU (9.5k params, Test 0.0136) per Bowles et al. (2024) fair benchmarking protocol.
+> The noise-validated Final Candidate was dynamically selected
+> because it is within 2.2% Val RMSE of the noise-free candidate and demonstrates QPU
 > deployment readiness (§11 noise degradation analysis)."
 
 **KEY VISUAL:** Test evaluation heatmap (actual vs predicted volatility surface) + per-day RMSE chart + QA comparison table
@@ -131,7 +132,7 @@
 > vs LR 0.0088). The noise-validated Final Candidate (Res. QRC Belenos) shows
 > +1.25% advantage over Classical LR on validation RMSE, and is competitive
 > within 1% on test data — confirming QPU deployment viability.
-> All 14/14 models pass QA (including noisy HPQRC and noisy Residual Hybrid variants
+> All 16/16 models pass QA (including noisy HPQRC and noisy Residual Hybrid variants
 > on Ascella and Belenos), with QPU-derived circuit configs.
 >
 > Thank you. I'm happy to take questions."
@@ -149,7 +150,7 @@
 > validated on Belenos QPU Noise Backend. It was dynamically selected because it is within
 > 2.1% Val RMSE of the noise-free candidate and demonstrates QPU deployment readiness.
 > The HPQRC (3x recirculation) achieves Test RMSE 0.0085 vs LR 0.0088, a +3.77%
-> quantum advantage on test data. All 14/14 models pass QA (includes noisy HPQRC and
+> quantum advantage on test data. All 16/16 models pass QA (includes noisy HPQRC and
 > noisy Residual Hybrid variants on Ascella/Belenos; noisy variants show Val RMSE ~0.65).
 > Noise validation uses a physically motivated 4-parameter Perceval NoiseModel
 > (brightness, indistinguishability, g2, transmittance) with QPU-derived values.
@@ -160,7 +161,7 @@
 > Our noise-validated Final Candidate, Residual QRC (Belenos), achieves Test RMSE 0.0089
 > (R²=0.992) and shows +1.25% advantage over Classical LR on validation RMSE, competitive
 > within ~1% on test data. This confirms QPU deployment viability.
-> All 14/14 quantum and classical models pass QA (including noisy HPQRC: Ascella Val 0.6528,
+> All 16/16 quantum and classical models pass QA (including noisy HPQRC: Ascella Val 0.6528,
 > Belenos 0.6525, Ideal 0.6523; and noisy Residual Hybrid: Ascella Val 0.6522, Belenos Val 0.6518).
 > The Final Candidate was dynamically selected because it is within 2.1% Val RMSE of the
 > noise-free candidate — a noise-validated (Belenos QPU) model is a stronger statement of
@@ -268,7 +269,7 @@
 | Noise selection rationale | Within 2.1% Val RMSE of noise-free; demonstrates QPU deployment readiness |
 | Noisy HPQRC (Ascella/Belenos/Ideal) | Val 0.6528/0.6525/0.6523, Test 0.0090/0.0091/0.0091 |
 | Noisy Residual Hybrid (Ascella/Belenos) | Val 0.6522/0.6518 (severe noise degradation) |
-| QA pass rate | 14/14 models on test data (includes noisy HPQRC + noisy Res. Hybrid) |
+| QA pass rate | 16/16 models on test data (includes noisy HPQRC + noisy Res. Hybrid) |
 | Noise model | 4-param Perceval NoiseModel (brightness=0.40, indist, g2, trans); Heurtel et al. (2023) |
 | Ascella noise params | brightness=0.40, indist=0.8636, g2=0.0195, trans=0.0718 |
 | Belenos noise params | brightness=0.40, indist=0.9190, g2=0.0180, trans=0.1482 |

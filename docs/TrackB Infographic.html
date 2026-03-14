@@ -114,9 +114,9 @@
             <div class="text-xs text-slate-500 mt-1">Belenos QPU: 0.0432 vs LR 0.0437</div>
         </div>
         <div class="glass-card rounded-2xl p-5 text-center">
-            <div class="text-3xl md:text-4xl font-black text-violet-400 mb-1">14/14</div>
+            <div class="text-3xl md:text-4xl font-black text-violet-400 mb-1">16/16</div>
             <div class="text-xs text-slate-400 uppercase tracking-wider">QA Models Pass</div>
-            <div class="text-xs text-slate-500 mt-1">Includes 3 noisy HPQRC variants</div>
+            <div class="text-xs text-slate-500 mt-1">Includes LSTM, GRU, noisy variants</div>
         </div>
     </div>
 
@@ -271,7 +271,7 @@
                         <div class="text-xs text-slate-500 mt-1">Res. QRC (Belenos) Val 0.0432 vs LR 0.0437</div>
                     </div>
                 </div>
-                <p class="text-xs text-slate-500 mt-4">Tested: Classical (LR, MLP), QRC Pure, Residual QRC (Ideal/Ascella/Belenos), HPQRC (3x recirc), Residual Hybrid, Noisy HPQRC (Ascella/Belenos/Ideal), Noisy Res. Hybrid (Ascella/Belenos). All 14/14 pass QA. Noisy HPQRC insight: feedback QRC amplifies photonic noise through recirculation.</p>
+                <p class="text-xs text-slate-500 mt-4">Tested: Classical (LR, MLP, LSTM, GRU), QRC Pure, Residual QRC (Ideal/Ascella/Belenos), HPQRC (3x recirc), Residual Hybrid, Noisy HPQRC (Ascella/Belenos/Ideal), Noisy Res. Hybrid (Ascella/Belenos). All 16/16 pass QA. LSTM/GRU parameter-matched (~9.5k params) per Bowles et al. (2024).</p>
             </div>
         </div>
     </section>
@@ -384,6 +384,18 @@
                         <td class="py-2 px-3 text-right text-slate-500">&mdash;</td>
                     </tr>
                     <tr class="border-b border-slate-800">
+                        <td class="py-2 px-3 text-slate-300">Sequential (DL)</td>
+                        <td class="py-2 px-3 text-cyan-300">GRU (h=10, 9.5k params)</td>
+                        <td class="py-2 px-3 text-right text-slate-300">0.0460</td>
+                        <td class="py-2 px-3 text-right text-slate-400">0.0136</td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
+                        <td class="py-2 px-3 text-slate-300">Sequential (DL)</td>
+                        <td class="py-2 px-3 text-cyan-300">LSTM (h=8, 9.5k params)</td>
+                        <td class="py-2 px-3 text-right text-slate-300">0.0476</td>
+                        <td class="py-2 px-3 text-right text-slate-400">0.0088</td>
+                    </tr>
+                    <tr class="border-b border-slate-800">
                         <td class="py-2 px-3 text-slate-300">Best Quantum Val</td>
                         <td class="py-2 px-3 text-pink-400">HPQRC (3x recirc)</td>
                         <td class="py-2 px-3 text-right text-slate-300">0.0432</td>
@@ -467,13 +479,13 @@
     const models = [
         { name: 'Res. QRC\n(Belenos)', rmse: 0.0432, color: '#10b981' },
         { name: 'Res. QRC\n(Ideal)', rmse: 0.0427, color: '#f59e0b' },
-        { name: 'HPQRC\n(3x recirc)', rmse: 0.0432, color: '#8b5cf6' },
+        { name: 'HPQRC\n(3x recirc)', rmse: 0.0423, color: '#8b5cf6' },
         { name: 'Res. QRC\n(Ascella)', rmse: 0.0432, color: '#ec4899' },
         { name: 'Linear\nRegression', rmse: 0.0437, color: '#06b6d4' },
+        { name: 'GRU\n(h=10)', rmse: 0.0460, color: '#a78bfa' },
+        { name: 'LSTM\n(h=8)', rmse: 0.0476, color: '#c084fc' },
         { name: 'MLP\n(128,64,32)', rmse: 0.0489, color: '#94a3b8' },
         { name: 'QRC Pure\n(Ideal)', rmse: 0.1904, color: '#ef4444' },
-        { name: 'Noisy Res.\nHybrid (Asc)', rmse: 0.6522, color: '#fb923c' },
-        { name: 'Noisy Res.\nHybrid (Bel)', rmse: 0.6518, color: '#fdba74' },
     ];
     new Chart(document.getElementById('modelChart').getContext('2d'), {
         type: 'bar',
