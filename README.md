@@ -14,12 +14,14 @@ quantum machine learning.
 - Project Report(GitHub Pages): [TrackB Infographic.html](https://thedaemon-wizard.github.io/Polarized_Q-volution2026_QML_Swaption_Pricing/TrackB%20Infographic.html)
 - Presentation Slide(GitHub Pages): [grand_finale_slides.html](https://thedaemon-wizard.github.io/Polarized_Q-volution2026_QML_Swaption_Pricing/grand_finale_slides.html)
 
+- Jupyter Notebook file: [swaption_qml.ipynb](https://github.com/thedaemon-wizard/Polarized_Q-volution2026_QML_Swaption_Pricing/blob/main/swaption_qml.ipynb)
+
 ---
 
 ### Quick Start for Judges
 
 1. **Open** `swaption_qml.ipynb` in Google Colab (GPU runtime recommended)
-2. **Create & upload .env file** - QUANDELA_TOKEN is set in .env (e.g. QUANDELA_TOKEN=your_token_here) and the .env file should be placed in the same folder as `swaption_qml.ipynb`. 
+2. **Create & upload .env file** - QUANDELA_TOKEN is set in .env file (e.g. QUANDELA_TOKEN=your_token_here) and the .env file should be placed in the same folder as `swaption_qml.ipynb`. 
 3. **Run All Cells** - the notebook is fully self-contained (data loads from Hugging Face)
 4. **Key results**: See §14 (Best Model Selection) and §15 for holdout + test evaluation
 
