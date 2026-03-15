@@ -1,6 +1,6 @@
 # Option Pricing with Quantum Machine Learning
 
-## Q-volution 2026 QML Hackathon - Track B (Quandela)
+## Team Polarized: Q-volution 2026 QML Hackathon - Track B (Quandela)
 
 This repository contains our submission for the Q-volution 2026 Quantum Machine Learning Hackathon,
 Track B organized by Quandela in collaboration with Mila and AMF (Autorite des marches financiers du Quebec).
